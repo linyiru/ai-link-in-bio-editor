@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npm run build:*)",
+      "Bash(npx wrangler:*)",
+      "Bash(nvm use:*)",
+      "Bash(node:*)",
+      "Bash(source:*)",
+      "Bash(CLOUDFLARE_ACCOUNT_ID=***ACCOUNT_ID_REMOVED*** npx wrangler pages deploy)",
+      "Bash(CLOUDFLARE_ACCOUNT_ID=***ACCOUNT_ID_REMOVED*** npx wrangler pages project create ai-link-in-bio-editor)",
+      "Bash(CLOUDFLARE_ACCOUNT_ID=***ACCOUNT_ID_REMOVED*** npx wrangler pages project create ai-link-in-bio-editor --production-branch=main)",
+      "Bash(CLOUDFLARE_ACCOUNT_ID=***ACCOUNT_ID_REMOVED*** npx wrangler pages deploy dist --project-name=ai-link-in-bio-editor)",
+      "WebFetch(domain:developers.cloudflare.com)",
+      "Bash(rm:*)",
+      "Bash(npm search:*)",
+      "Bash(git init:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

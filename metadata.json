@@ -1,0 +1,5 @@
+{
+  "name": "AI Link-in-Bio Editor(linktree)",
+  "description": "A responsive link-in-bio page editor with a live preview, customizable themes, and AI-powered content suggestions powered by Gemini. Users can manage their profile, links, and appearance, with all changes saved locally.",
+  "requestFramePermissions": []
+}
