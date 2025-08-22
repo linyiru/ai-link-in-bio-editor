@@ -32,7 +32,11 @@ const entryServer = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineP
   __proto__: null,
   default: handleRequest
 }, Symbol.toStringTag, { value: "Module" }));
+const styles = "/assets/styles-xZv4TYpo.css";
 const links = () => [{
+  rel: "stylesheet",
+  href: styles
+}, {
   rel: "preconnect",
   href: "https://fonts.googleapis.com"
 }, {
@@ -52,9 +56,7 @@ const root = UNSAFE_withComponentProps(function App() {
       }), /* @__PURE__ */ jsx("meta", {
         name: "viewport",
         content: "width=device-width, initial-scale=1"
-      }), /* @__PURE__ */ jsx(Meta, {}), /* @__PURE__ */ jsx(Links, {}), /* @__PURE__ */ jsx("script", {
-        src: "https://cdn.tailwindcss.com"
-      })]
+      }), /* @__PURE__ */ jsx(Meta, {}), /* @__PURE__ */ jsx(Links, {})]
     }), /* @__PURE__ */ jsxs("body", {
       children: [/* @__PURE__ */ jsx(Outlet, {}), /* @__PURE__ */ jsx(ScrollRestoration, {}), /* @__PURE__ */ jsx(Scripts, {})]
     })]
@@ -260,6 +262,344 @@ const INITIAL_USER_DATA = {
   ],
   themeSettings: DEFAULT_THEME_SETTINGS
 };
+const PALETTE_CLASSES = {
+  "default": {
+    light: {
+      text: "text-blue-primary",
+      button: "bg-blue-primary text-blue-secondary",
+      accentHover: "hover:text-blue-accent-light",
+      iconWrapper: "bg-blue-primary text-blue-secondary"
+    },
+    dark: {
+      text: "text-blue-accent-dark",
+      button: "bg-blue-primary text-blue-secondary",
+      accentHover: "hover:text-blue-accent-dark",
+      iconWrapper: "bg-blue-primary text-blue-secondary"
+    }
+  },
+  "rose": {
+    light: {
+      text: "text-rose-accent-light",
+      button: "bg-rose-primary text-rose-secondary",
+      accentHover: "hover:text-rose-accent-light",
+      iconWrapper: "bg-rose-primary text-rose-secondary"
+    },
+    dark: {
+      text: "text-rose-accent-dark",
+      button: "bg-rose-primary text-rose-secondary",
+      accentHover: "hover:text-rose-accent-dark",
+      iconWrapper: "bg-rose-primary text-rose-secondary"
+    }
+  },
+  "green": {
+    light: {
+      text: "text-green-accent-light",
+      button: "bg-green-primary text-green-secondary",
+      accentHover: "hover:text-green-accent-light",
+      iconWrapper: "bg-green-primary text-green-secondary"
+    },
+    dark: {
+      text: "text-green-accent-dark",
+      button: "bg-green-primary text-green-secondary",
+      accentHover: "hover:text-green-accent-dark",
+      iconWrapper: "bg-green-primary text-green-secondary"
+    }
+  },
+  "purple": {
+    light: {
+      text: "text-purple-accent-light",
+      button: "bg-purple-primary text-purple-secondary",
+      accentHover: "hover:text-purple-accent-light",
+      iconWrapper: "bg-purple-primary text-purple-secondary"
+    },
+    dark: {
+      text: "text-purple-accent-dark",
+      button: "bg-purple-primary text-purple-secondary",
+      accentHover: "hover:text-purple-accent-dark",
+      iconWrapper: "bg-purple-primary text-purple-secondary"
+    }
+  },
+  "orange": {
+    light: {
+      text: "text-orange-accent-light",
+      button: "bg-orange-primary text-orange-secondary",
+      accentHover: "hover:text-orange-accent-light",
+      iconWrapper: "bg-orange-primary text-orange-secondary"
+    },
+    dark: {
+      text: "text-orange-accent-dark",
+      button: "bg-orange-primary text-orange-secondary",
+      accentHover: "hover:text-orange-accent-dark",
+      iconWrapper: "bg-orange-primary text-orange-secondary"
+    }
+  },
+  "blue": {
+    light: {
+      text: "text-blue-accent-light",
+      button: "bg-blue-primary text-blue-secondary",
+      accentHover: "hover:text-blue-accent-light",
+      iconWrapper: "bg-blue-primary text-blue-secondary"
+    },
+    dark: {
+      text: "text-blue-accent-dark",
+      button: "bg-blue-primary text-blue-secondary",
+      accentHover: "hover:text-blue-accent-dark",
+      iconWrapper: "bg-blue-primary text-blue-secondary"
+    }
+  },
+  "teal": {
+    light: {
+      text: "text-teal-accent-light",
+      button: "bg-teal-primary text-teal-secondary",
+      accentHover: "hover:text-teal-accent-light",
+      iconWrapper: "bg-teal-primary text-teal-secondary"
+    },
+    dark: {
+      text: "text-teal-accent-dark",
+      button: "bg-teal-primary text-teal-secondary",
+      accentHover: "hover:text-teal-accent-dark",
+      iconWrapper: "bg-teal-primary text-teal-secondary"
+    }
+  },
+  "pink": {
+    light: {
+      text: "text-pink-accent-light",
+      button: "bg-pink-primary text-pink-secondary",
+      accentHover: "hover:text-pink-accent-light",
+      iconWrapper: "bg-pink-primary text-pink-secondary"
+    },
+    dark: {
+      text: "text-pink-accent-dark",
+      button: "bg-pink-primary text-pink-secondary",
+      accentHover: "hover:text-pink-accent-dark",
+      iconWrapper: "bg-pink-primary text-pink-secondary"
+    }
+  },
+  "sky": {
+    light: {
+      text: "text-sky-accent-light",
+      button: "bg-sky-primary text-sky-secondary",
+      accentHover: "hover:text-sky-accent-light",
+      iconWrapper: "bg-sky-primary text-sky-secondary"
+    },
+    dark: {
+      text: "text-sky-accent-dark",
+      button: "bg-sky-primary text-sky-secondary",
+      accentHover: "hover:text-sky-accent-dark",
+      iconWrapper: "bg-sky-primary text-sky-secondary"
+    }
+  },
+  "coral": {
+    light: {
+      text: "text-coral-accent-light",
+      button: "bg-coral-primary text-coral-secondary",
+      accentHover: "hover:text-coral-accent-light",
+      iconWrapper: "bg-coral-primary text-coral-secondary"
+    },
+    dark: {
+      text: "text-coral-accent-dark",
+      button: "bg-coral-primary text-coral-secondary",
+      accentHover: "hover:text-coral-accent-dark",
+      iconWrapper: "bg-coral-primary text-coral-secondary"
+    }
+  },
+  "indigo": {
+    light: {
+      text: "text-indigo-accent-light",
+      button: "bg-indigo-primary text-indigo-secondary",
+      accentHover: "hover:text-indigo-accent-light",
+      iconWrapper: "bg-indigo-primary text-indigo-secondary"
+    },
+    dark: {
+      text: "text-indigo-accent-dark",
+      button: "bg-indigo-primary text-indigo-secondary",
+      accentHover: "hover:text-indigo-accent-dark",
+      iconWrapper: "bg-indigo-primary text-indigo-secondary"
+    }
+  },
+  "crimson": {
+    light: {
+      text: "text-crimson-accent-light",
+      button: "bg-crimson-primary text-crimson-secondary",
+      accentHover: "hover:text-crimson-accent-light",
+      iconWrapper: "bg-crimson-primary text-crimson-secondary"
+    },
+    dark: {
+      text: "text-crimson-accent-dark",
+      button: "bg-crimson-primary text-crimson-secondary",
+      accentHover: "hover:text-crimson-accent-dark",
+      iconWrapper: "bg-crimson-primary text-crimson-secondary"
+    }
+  },
+  "emerald": {
+    light: {
+      text: "text-emerald-accent-light",
+      button: "bg-emerald-primary text-emerald-secondary",
+      accentHover: "hover:text-emerald-accent-light",
+      iconWrapper: "bg-emerald-primary text-emerald-secondary"
+    },
+    dark: {
+      text: "text-emerald-accent-dark",
+      button: "bg-emerald-primary text-emerald-secondary",
+      accentHover: "hover:text-emerald-accent-dark",
+      iconWrapper: "bg-emerald-primary text-emerald-secondary"
+    }
+  },
+  "mint": {
+    light: {
+      text: "text-mint-accent-light",
+      button: "bg-mint-primary text-mint-secondary",
+      accentHover: "hover:text-mint-accent-light",
+      iconWrapper: "bg-mint-primary text-mint-secondary"
+    },
+    dark: {
+      text: "text-mint-accent-dark",
+      button: "bg-mint-primary text-mint-secondary",
+      accentHover: "hover:text-mint-accent-dark",
+      iconWrapper: "bg-mint-primary text-mint-secondary"
+    }
+  },
+  "lemon": {
+    light: {
+      text: "text-lemon-accent-light",
+      button: "bg-lemon-primary text-lemon-secondary",
+      accentHover: "hover:text-lemon-accent-light",
+      iconWrapper: "bg-lemon-primary text-lemon-secondary"
+    },
+    dark: {
+      text: "text-lemon-accent-dark",
+      button: "bg-lemon-primary text-lemon-secondary",
+      accentHover: "hover:text-lemon-accent-dark",
+      iconWrapper: "bg-lemon-primary text-lemon-secondary"
+    }
+  },
+  "stone": {
+    light: {
+      text: "text-stone-accent-light",
+      button: "bg-stone-primary text-stone-secondary",
+      accentHover: "hover:text-stone-accent-light",
+      iconWrapper: "bg-stone-primary text-stone-secondary"
+    },
+    dark: {
+      text: "text-stone-accent-dark",
+      button: "bg-stone-primary text-stone-secondary",
+      accentHover: "hover:text-stone-accent-dark",
+      iconWrapper: "bg-stone-primary text-stone-secondary"
+    }
+  },
+  "lavender": {
+    light: {
+      text: "text-lavender-accent-light",
+      button: "bg-lavender-primary text-lavender-secondary",
+      accentHover: "hover:text-lavender-accent-light",
+      iconWrapper: "bg-lavender-primary text-lavender-secondary"
+    },
+    dark: {
+      text: "text-lavender-accent-dark",
+      button: "bg-lavender-primary text-lavender-secondary",
+      accentHover: "hover:text-lavender-accent-dark",
+      iconWrapper: "bg-lavender-primary text-lavender-secondary"
+    }
+  },
+  "peach": {
+    light: {
+      text: "text-peach-accent-light",
+      button: "bg-peach-primary text-peach-secondary",
+      accentHover: "hover:text-peach-accent-light",
+      iconWrapper: "bg-peach-primary text-peach-secondary"
+    },
+    dark: {
+      text: "text-peach-accent-dark",
+      button: "bg-peach-primary text-peach-secondary",
+      accentHover: "hover:text-peach-accent-dark",
+      iconWrapper: "bg-peach-primary text-peach-secondary"
+    }
+  },
+  "olive": {
+    light: {
+      text: "text-olive-accent-light",
+      button: "bg-olive-primary text-olive-secondary",
+      accentHover: "hover:text-olive-accent-light",
+      iconWrapper: "bg-olive-primary text-olive-secondary"
+    },
+    dark: {
+      text: "text-olive-accent-dark",
+      button: "bg-olive-primary text-olive-secondary",
+      accentHover: "hover:text-olive-accent-dark",
+      iconWrapper: "bg-olive-primary text-olive-secondary"
+    }
+  },
+  "navy": {
+    light: {
+      text: "text-navy-accent-light",
+      button: "bg-navy-primary text-navy-secondary",
+      accentHover: "hover:text-navy-accent-light",
+      iconWrapper: "bg-navy-primary text-navy-secondary"
+    },
+    dark: {
+      text: "text-navy-accent-dark",
+      button: "bg-navy-primary text-navy-secondary",
+      accentHover: "hover:text-navy-accent-dark",
+      iconWrapper: "bg-navy-primary text-navy-secondary"
+    }
+  },
+  "chocolate": {
+    light: {
+      text: "text-chocolate-accent-light",
+      button: "bg-chocolate-primary text-chocolate-secondary",
+      accentHover: "hover:text-chocolate-accent-light",
+      iconWrapper: "bg-chocolate-primary text-chocolate-secondary"
+    },
+    dark: {
+      text: "text-chocolate-accent-dark",
+      button: "bg-chocolate-primary text-chocolate-secondary",
+      accentHover: "hover:text-chocolate-accent-dark",
+      iconWrapper: "bg-chocolate-primary text-chocolate-secondary"
+    }
+  },
+  "slate": {
+    light: {
+      text: "text-slate-accent-light",
+      button: "bg-slate-primary text-slate-secondary",
+      accentHover: "hover:text-slate-accent-light",
+      iconWrapper: "bg-slate-primary text-slate-secondary"
+    },
+    dark: {
+      text: "text-slate-accent-dark",
+      button: "bg-slate-primary text-slate-secondary",
+      accentHover: "hover:text-slate-accent-dark",
+      iconWrapper: "bg-slate-primary text-slate-secondary"
+    }
+  },
+  "gold": {
+    light: {
+      text: "text-gold-accent-light",
+      button: "bg-gold-primary text-gold-secondary",
+      accentHover: "hover:text-gold-accent-light",
+      iconWrapper: "bg-gold-primary text-gold-secondary"
+    },
+    dark: {
+      text: "text-gold-accent-dark",
+      button: "bg-gold-primary text-gold-secondary",
+      accentHover: "hover:text-gold-accent-dark",
+      iconWrapper: "bg-gold-primary text-gold-secondary"
+    }
+  },
+  "silver": {
+    light: {
+      text: "text-silver-accent-light",
+      button: "bg-silver-primary text-silver-secondary",
+      accentHover: "hover:text-silver-accent-light",
+      iconWrapper: "bg-silver-primary text-silver-secondary"
+    },
+    dark: {
+      text: "text-silver-accent-dark",
+      button: "bg-silver-primary text-silver-secondary",
+      accentHover: "hover:text-silver-accent-dark",
+      iconWrapper: "bg-silver-primary text-silver-secondary"
+    }
+  }
+};
 function getThemeStyles(themeSettings) {
   const {
     isDarkMode,
@@ -271,12 +611,12 @@ function getThemeStyles(themeSettings) {
   } = themeSettings;
   const bgColor = BACKGROUND_COLORS.find((c) => c.id === backgroundColorId) || BACKGROUND_COLORS[0];
   const backgroundClass = isDarkMode ? bgColor.dark : bgColor.light;
-  const palette = COLOR_PALETTES.find((p) => p.id === colorPaletteId) || COLOR_PALETTES[0];
-  const modeStyles = isDarkMode ? palette.dark : palette.light;
-  const textClass = `text-[${modeStyles.accent}]`;
-  const buttonClass = `bg-[${modeStyles.primary}] text-[${modeStyles.secondary}]`;
-  const accentHoverTextClass = `hover:text-[${modeStyles.accent}]`;
-  const iconWrapperClass = `bg-[${modeStyles.primary}] text-[${modeStyles.secondary}]`;
+  const paletteClasses = PALETTE_CLASSES[colorPaletteId] || PALETTE_CLASSES.default;
+  const modeClasses = isDarkMode ? paletteClasses.dark : paletteClasses.light;
+  const textClass = modeClasses.text;
+  const buttonClass = modeClasses.button;
+  const accentHoverTextClass = modeClasses.accentHover;
+  const iconWrapperClass = modeClasses.iconWrapper;
   const font = FONT_FAMILY_OPTIONS.find((f) => f.id === fontFamily) || FONT_FAMILY_OPTIONS[0];
   const fontClass = font.class;
   const radius = BORDER_RADIUS_OPTIONS.find((r) => r.id === borderRadius) || BORDER_RADIUS_OPTIONS[0];
@@ -2147,7 +2487,7 @@ const route8 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   __proto__: null,
   loader
 }, Symbol.toStringTag, { value: "Module" }));
-const serverManifest = { "entry": { "module": "/assets/entry.client-D0tFyxRz.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/index-DvEMbgo5.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/root-BNOUgMe-.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/index-DvEMbgo5.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/home": { "id": "routes/home", "parentId": "root", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/home-DUsAFJYC.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/BioLinkPage-DqpxeZS-.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/admin": { "id": "routes/admin", "parentId": "root", "path": "admin", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/admin-BI0yHcSp.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/dataService-Bzs1NMx2.js", "/assets/BioLinkPage-DqpxeZS-.js", "/assets/index-DvEMbgo5.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/about": { "id": "routes/about", "parentId": "root", "path": "about", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/about-D8Heu3gi.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/preview": { "id": "routes/preview", "parentId": "root", "path": "preview", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/preview-DtrggnDZ.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/BioLinkPage-DqpxeZS-.js", "/assets/dataService-Bzs1NMx2.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/api.data": { "id": "routes/api.data", "parentId": "root", "path": "api/data", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/api.data-l0sNRNKZ.js", "imports": [], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/api.save": { "id": "routes/api.save", "parentId": "root", "path": "api/save", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/api.save-l0sNRNKZ.js", "imports": [], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/api.upload-image": { "id": "routes/api.upload-image", "parentId": "root", "path": "api/upload-image", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/api.upload-image-l0sNRNKZ.js", "imports": [], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/api.image.$filename": { "id": "routes/api.image.$filename", "parentId": "root", "path": "api/image/:filename", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/api.image._filename-l0sNRNKZ.js", "imports": [], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 } }, "url": "/assets/manifest-f48a765a.js", "version": "f48a765a", "sri": void 0 };
+const serverManifest = { "entry": { "module": "/assets/entry.client-DTD9_fYF.js", "imports": ["/assets/chunk-UH6JLGW7-wzR4Ieye.js", "/assets/index-Bsz4tAbP.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/root-BTHeeGge.js", "imports": ["/assets/chunk-UH6JLGW7-wzR4Ieye.js", "/assets/index-Bsz4tAbP.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/home": { "id": "routes/home", "parentId": "root", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/home-DYyBw48-.js", "imports": ["/assets/chunk-UH6JLGW7-wzR4Ieye.js", "/assets/BioLinkPage-bjBPXUve.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/admin": { "id": "routes/admin", "parentId": "root", "path": "admin", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/admin-Bk2eH_6O.js", "imports": ["/assets/chunk-UH6JLGW7-wzR4Ieye.js", "/assets/dataService-Bzs1NMx2.js", "/assets/BioLinkPage-bjBPXUve.js", "/assets/index-Bsz4tAbP.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/about": { "id": "routes/about", "parentId": "root", "path": "about", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/about-BcYJ5nxT.js", "imports": ["/assets/chunk-UH6JLGW7-wzR4Ieye.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/preview": { "id": "routes/preview", "parentId": "root", "path": "preview", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/preview-BrQlAPjT.js", "imports": ["/assets/chunk-UH6JLGW7-wzR4Ieye.js", "/assets/BioLinkPage-bjBPXUve.js", "/assets/dataService-Bzs1NMx2.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/api.data": { "id": "routes/api.data", "parentId": "root", "path": "api/data", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/api.data-l0sNRNKZ.js", "imports": [], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/api.save": { "id": "routes/api.save", "parentId": "root", "path": "api/save", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/api.save-l0sNRNKZ.js", "imports": [], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/api.upload-image": { "id": "routes/api.upload-image", "parentId": "root", "path": "api/upload-image", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/api.upload-image-l0sNRNKZ.js", "imports": [], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/api.image.$filename": { "id": "routes/api.image.$filename", "parentId": "root", "path": "api/image/:filename", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/api.image._filename-l0sNRNKZ.js", "imports": [], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 } }, "url": "/assets/manifest-9e12b0cf.js", "version": "9e12b0cf", "sri": void 0 };
 const assetsBuildDirectory = "build/client";
 const basename = "/";
 const future = { "unstable_middleware": false, "unstable_optimizeDeps": false, "unstable_splitRouteModules": false, "unstable_subResourceIntegrity": false, "unstable_viteEnvironmentApi": false };
