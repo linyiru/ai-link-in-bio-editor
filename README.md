@@ -2,9 +2,6 @@
 
 An elegant, AI-powered Link-in-Bio editor built with React Router v7 and deployed on Cloudflare Workers. Create beautiful, personalized link pages with live theme customization and cloud storage.
 
-**Original Repository**: [https://github.com/linyiru/ai-link-in-bio-editor](https://github.com/linyiru/ai-link-in-bio-editor)  
-**Author**: [@linyiru](https://github.com/linyiru)
-
 ## ✨ Features
 
 - 🎨 **Complete Theme System** - 24 color palettes with primary, secondary, accent variants
@@ -156,8 +153,9 @@ This app follows accessibility best practices with proper ARIA labels, semantic 
 
 ## 📄 Credits
 
-- **Original Author**: [@linyiru](https://github.com/linyiru)
-- **Repository**: [ai-link-in-bio-editor](https://github.com/linyiru/ai-link-in-bio-editor)
+- Author: [@linyiru](https://github.com/linyiru)
+- Repository: [ai-link-in-bio-editor](https://github.com/linyiru/ai-link-in-bio-editor)
 - Design inspiration: [v0 community](https://v0.app/community/v0-me-Zz6mBLdU9bC)
 - Drag-and-drop: [dnd-kit](https://github.com/clauderic/dnd-kit)
 - Infrastructure: [Cloudflare Workers](https://workers.cloudflare.com/)
+- Icons: [Lucide](https://lucide.dev/)
