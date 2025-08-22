@@ -38,7 +38,7 @@ For optimal image loading performance, follow the [deployment guide](./DEPLOY.md
 
 ## 💻 Local Development
 
-Prerequisites: Node.js 18+
+Prerequisites: Node.js 20+ (required for Wrangler and optimal compatibility)
 
 1. **Install dependencies:**
    ```bash
