@@ -3,7 +3,7 @@ import type { UserData } from '../types';
 const API_BASE = '/api';
 
 export class DataService {
-  // Load user data from server
+  // Load user data from server (still used by admin interface)
   static async loadUserData(): Promise<UserData | null> {
     try {
       const response = await fetch(`${API_BASE}/data`);
@@ -14,7 +14,7 @@ export class DataService {
         return null;
       }
     } catch (error) {
-      console.error('Failed to load data from server:', error);
+      console.error('Network error loading data:', error);
       return null;
     }
   }
@@ -40,7 +40,7 @@ export class DataService {
         };
       }
     } catch (error) {
-      console.error('Failed to save to server:', error);
+      console.error('Failed to save data:', error);
       return {
         success: false,
         error: 'Network error: Unable to save data'
