@@ -34,3 +34,4 @@ wrangler.dev.vars
 
 # Build output
 build/
+.react-router/
