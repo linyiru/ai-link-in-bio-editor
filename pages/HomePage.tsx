@@ -56,7 +56,7 @@ const HomePage: React.FC = () => {
   const [userData, setUserData] = useState<UserData>(demoUserData);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Load user's data from database/localStorage
+  // Load user's data from database
   useEffect(() => {
     const tryLoadUserData = async () => {
       setIsLoading(true);

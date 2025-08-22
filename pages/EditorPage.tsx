@@ -15,7 +15,7 @@ import TabButton from '../components/TabButton';
 type EditorTab = 'profile' | 'links' | 'theme';
 
 const EditorPage: React.FC = () => {
-  const [userData, setUserData] = useUserData();
+  const [userData, setUserData, isDataLoading] = useUserData();
   const [activeTab, setActiveTab] = useState<EditorTab>('profile');
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -49,6 +49,17 @@ const EditorPage: React.FC = () => {
     }
   };
 
+
+  if (isDataLoading) {
+    return (
+      <div className="min-h-screen bg-gray-900 text-gray-300 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading editor...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen text-gray-300">
