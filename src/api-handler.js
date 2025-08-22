@@ -18,6 +18,18 @@ export async function handleApiRequest(request, env, ctx) {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Check if database is available
+  if (!env.DB) {
+    console.error('Database binding not found');
+    return new Response(JSON.stringify({ 
+      error: 'Database not configured',
+      details: 'D1 database binding is missing. Please check your wrangler.toml configuration and ensure the database is created and bound properly.'
+    }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  }
+
   // Extract route from URL pathname (remove /api/ prefix)
   const route = url.pathname.replace('/api/', '');
   
@@ -283,6 +295,93 @@ export async function handleApiRequest(request, env, ctx) {
       } catch (error) {
         console.error('Image proxy error:', error);
         return new Response('Failed to fetch image', { status: 500 });
+      }
+    }
+
+    // GET /api/health - Health check endpoint
+    if (request.method === 'GET' && route === 'health') {
+      try {
+        // Test database connection by checking if tables exist
+        const usersTable = await env.DB.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='users'").first();
+        const linksTable = await env.DB.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='links'").first();
+        
+        return new Response(JSON.stringify({
+          status: usersTable && linksTable ? 'healthy' : 'tables_missing',
+          database: 'connected',
+          tables: {
+            users: !!usersTable,
+            links: !!linksTable
+          },
+          timestamp: new Date().toISOString()
+        }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      } catch (dbError) {
+        return new Response(JSON.stringify({
+          status: 'unhealthy',
+          database: 'error',
+          error: dbError.message,
+          timestamp: new Date().toISOString()
+        }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+    }
+
+    // POST /api/setup-database - Manual database setup endpoint
+    if (request.method === 'POST' && route === 'setup-database') {
+      try {
+        // Create tables manually if they don't exist
+        await env.DB.prepare(`
+          CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_slug TEXT UNIQUE NOT NULL,
+            name TEXT NOT NULL,
+            bio TEXT,
+            image_url TEXT,
+            theme_settings TEXT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+          )
+        `).run();
+
+        await env.DB.prepare(`
+          CREATE TABLE IF NOT EXISTS links (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            link_id TEXT NOT NULL,
+            title TEXT NOT NULL,
+            url TEXT NOT NULL,
+            is_active INTEGER DEFAULT 1,
+            order_index INTEGER NOT NULL DEFAULT 0,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+          )
+        `).run();
+
+        // Create indexes
+        await env.DB.prepare(`CREATE UNIQUE INDEX IF NOT EXISTS idx_users_slug ON users(user_slug)`).run();
+        await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_links_user_id ON links(user_id)`).run();
+        await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_links_order ON links(user_id, order_index)`).run();
+
+        return new Response(JSON.stringify({
+          success: true,
+          message: 'Database tables created successfully',
+          timestamp: new Date().toISOString()
+        }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      } catch (dbError) {
+        return new Response(JSON.stringify({
+          success: false,
+          error: dbError.message,
+          timestamp: new Date().toISOString()
+        }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
       }
     }
 

@@ -28,7 +28,10 @@
       "Bash(mkdir:*)",
       "Bash(npx react-router:*)",
       "Bash(npm run:*)",
-      "Bash(npx vite:*)"
+      "Bash(npx vite:*)",
+      "Bash(git push:*)",
+      "Bash(gh repo edit:*)",
+      "Bash(gh repo view:*)"
     ],
     "deny": [],
     "ask": [],
