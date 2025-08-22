@@ -16,9 +16,9 @@ An elegant, AI-powered Link-in-Bio editor built with React and deployed on Cloud
 
 Deploy your own instance to Cloudflare Workers with one click:
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/YOUR_USERNAME/YOUR_REPO_NAME)
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/linyiru/ai-link-in-bio-editor)
 
-> **Note**: Replace the URL with your actual repository URL. The deployment will:
+> **Note**: The deployment will:
 > - Automatically provision a D1 database for storing user data  
 > - Set up the Worker with proper routing and API endpoints
 > - Configure environment variables for the Gemini API (optional)
