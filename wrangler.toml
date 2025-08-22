@@ -34,3 +34,7 @@ preview_bucket_name = "link-in-bio-images-preview"
 # Environment variables for your Gemini API key
 # Use wrangler secret to set sensitive values:
 # wrangler secret put GEMINI_API_KEY
+
+# wrangler.toml (wrangler v3.88.0^)
+[observability.logs]
+enabled = true

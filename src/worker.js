@@ -1,6 +1,48 @@
 import { handleApiRequest } from './api-handler.js';
 import { getAssetFromKV } from '@cloudflare/kv-asset-handler';
 
+// Helper function to get user data for SSR
+async function getUserDataForSSR(env) {
+  try {
+    if (!env.DB) return null;
+
+    const userResult = await env.DB.prepare(`
+      SELECT id, name, bio, image_url, theme_settings 
+      FROM users 
+      ORDER BY id DESC 
+      LIMIT 1
+    `).first();
+
+    if (!userResult) return null;
+
+    const linksResult = await env.DB.prepare(`
+      SELECT link_id, title, url, is_active, icon
+      FROM links 
+      WHERE user_id = ? 
+      ORDER BY order_index ASC
+    `).bind(userResult.id).all();
+
+    return {
+      profile: {
+        name: userResult.name,
+        bio: userResult.bio || '',
+        imageUrl: userResult.image_url || ''
+      },
+      links: linksResult.results.map((link) => ({
+        id: link.link_id,
+        title: link.title,
+        url: link.url,
+        isActive: Boolean(link.is_active),
+        icon: link.icon || 'Link'
+      })),
+      themeSettings: JSON.parse(userResult.theme_settings)
+    };
+  } catch (error) {
+    console.error('Failed to load user data for SSR:', error);
+    return null;
+  }
+}
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -21,7 +63,6 @@ export default {
     // For all other routes, serve static assets
     try {
       console.log('Serving asset for:', url.pathname);
-      
       
       // Check if we have static content bindings
       if (!env.__STATIC_CONTENT) {
@@ -72,7 +113,7 @@ export default {
         return new Response('Asset not found', { status: 404 });
       }
       
-      return await getAssetFromKV(
+      let response = await getAssetFromKV(
         {
           request,
           waitUntil: ctx.waitUntil.bind(ctx),
@@ -96,13 +137,36 @@ export default {
           },
         }
       );
+
+      // SSR for homepage: inject user data
+      if (url.pathname === '/' && response.headers.get('content-type')?.includes('text/html')) {
+        console.log('Applying SSR to homepage');
+        const userData = await getUserDataForSSR(env);
+        
+        if (userData) {
+          let html = await response.text();
+          const dataScript = `
+            <script>
+              window.__INITIAL_USER_DATA__ = ${JSON.stringify(userData)};
+            </script>
+          `;
+          html = html.replace('</head>', `${dataScript}</head>`);
+          
+          response = new Response(html, {
+            status: response.status,
+            headers: response.headers
+          });
+        }
+      }
+
+      return response;
     } catch (e) {
       console.error('Asset serving error for', url.pathname, ':', e);
       // Fall back to serving index.html for SPA routes
       if (!url.pathname.includes('.') && !url.pathname.startsWith('/api/')) {
         console.log('Fallback: serving index.html for:', url.pathname);
         try {
-          return await getAssetFromKV(
+          let response = await getAssetFromKV(
             {
               request: new Request(`${url.origin}/index.html`, request),
               waitUntil: ctx.waitUntil.bind(ctx),
@@ -115,6 +179,29 @@ export default {
               },
             }
           );
+
+          // SSR for homepage fallback: inject user data
+          if (url.pathname === '/' && response.headers.get('content-type')?.includes('text/html')) {
+            console.log('Applying SSR to homepage (fallback)');
+            const userData = await getUserDataForSSR(env);
+            
+            if (userData) {
+              let html = await response.text();
+              const dataScript = `
+                <script>
+                  window.__INITIAL_USER_DATA__ = ${JSON.stringify(userData)};
+                </script>
+              `;
+              html = html.replace('</head>', `${dataScript}</head>`);
+              
+              response = new Response(html, {
+                status: response.status,
+                headers: response.headers
+              });
+            }
+          }
+
+          return response;
         } catch (fallbackError) {
           console.error('Fallback error:', fallbackError);
           return new Response('Not found', { status: 404 });
