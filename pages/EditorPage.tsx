@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useUserData } from '../hooks/useUserData';
+import { DataService } from '../services/dataService';
 import type { ThemeSettings } from '../types';
 import BioLinkPage from '../components/BioLinkPage';
 import { LinkIcon, PaletteIcon, UserIcon, LayoutTemplateIcon } from '../components/icons';
@@ -16,10 +18,41 @@ const EditorPage: React.FC = () => {
   const [userData, setUserData] = useUserData();
   const [activeTab, setActiveTab] = useState<EditorTab>('profile');
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [lastSaveResult, setLastSaveResult] = useState<{ 
+    success: boolean; 
+    slug?: string; 
+    url?: string; 
+    error?: string;
+  } | null>(null);
+  const [showSaveSuccess, setShowSaveSuccess] = useState(false);
 
   const handleApplyTemplate = (themeSettings: ThemeSettings) => {
     setUserData(prev => ({ ...prev, themeSettings }));
     setIsTemplateModalOpen(false);
+  };
+
+  const handleSaveToCloud = async () => {
+    setIsLoading(true);
+    try {
+      const result = await DataService.saveUserData(userData);
+      setLastSaveResult(result);
+      if (result.success) {
+        setShowSaveSuccess(true);
+        setTimeout(() => setShowSaveSuccess(false), 3000);
+      }
+    } catch (error) {
+      setLastSaveResult({
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to save'
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
   };
 
   return (
@@ -35,14 +68,19 @@ const EditorPage: React.FC = () => {
               <LayoutTemplateIcon className="w-5 h-5"/>
               Templates
             </button>
-            <a
-              href="/#/preview"
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              onClick={handleSaveToCloud}
+              disabled={isLoading}
+              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-semibold shadow-md"
+            >
+              {isLoading ? 'Saving...' : 'Save & Share'}
+            </button>
+            <Link 
+              to="/"
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-semibold shadow-md"
             >
-              Live Preview
-            </a>
+              View Homepage
+            </Link>
           </div>
         </div>
       </header>
@@ -78,18 +116,46 @@ const EditorPage: React.FC = () => {
 
         <div className="lg:col-span-1">
             <div className="sticky top-24">
-                 <div className="relative mx-auto border-gray-800 bg-gray-800 border-[14px] rounded-[2.5rem] h-[600px] w-[300px] shadow-2xl shadow-blue-500/10">
-                    <div className="w-[140px] h-[18px] bg-gray-800 top-0 rounded-b-[1rem] left-1/2 -translate-x-1/2 absolute"></div>
+                 <div className="relative mx-auto border-gray-800 bg-gray-800 border-[14px] rounded-[2.5rem] h-[650px] w-[375px] shadow-2xl shadow-blue-500/10">
+                    <div className="w-[160px] h-[18px] bg-gray-800 top-0 rounded-b-[1rem] left-1/2 -translate-x-1/2 absolute"></div>
                     <div className="h-[46px] w-[3px] bg-gray-800 absolute -start-[17px] top-[124px] rounded-s-lg"></div>
                     <div className="h-[46px] w-[3px] bg-gray-800 absolute -start-[17px] top-[178px] rounded-s-lg"></div>
                     <div className="h-[64px] w-[3px] bg-gray-800 absolute -end-[17px] top-[142px] rounded-e-lg"></div>
                     <div className="rounded-[2rem] overflow-hidden w-full h-full bg-white">
-                        <BioLinkPage userData={userData} />
+                        <BioLinkPage userData={userData} isPreview={true} />
                     </div>
                 </div>
             </div>
         </div>
       </main>
+
+      {/* Success notification */}
+      {showSaveSuccess && lastSaveResult?.success && (
+        <div className="fixed top-20 right-4 bg-green-600 text-white p-4 rounded-lg shadow-lg z-30 max-w-sm">
+          <div className="mb-2 font-semibold">Page saved successfully!</div>
+          {lastSaveResult.url && (
+            <div className="space-y-2">
+              <div className="text-sm break-all bg-green-700 p-2 rounded">
+                {lastSaveResult.url}
+              </div>
+              <button
+                onClick={() => copyToClipboard(lastSaveResult.url!)}
+                className="text-xs bg-green-700 px-2 py-1 rounded hover:bg-green-800"
+              >
+                Copy Link
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Error notification */}
+      {lastSaveResult && !lastSaveResult.success && (
+        <div className="fixed top-20 right-4 bg-red-600 text-white p-4 rounded-lg shadow-lg z-30 max-w-sm">
+          <div className="font-semibold mb-1">Save failed</div>
+          <div className="text-sm">{lastSaveResult.error}</div>
+        </div>
+      )}
 
       {isTemplateModalOpen && (
         <TemplateModal onClose={() => setIsTemplateModalOpen(false)}>

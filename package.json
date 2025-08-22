@@ -1,12 +1,17 @@
 {
-  "name": "ai-link-in-bio-editor(linktree)",
+  "name": "ai-link-in-bio-editor",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite build && wrangler dev",
+    "dev:remote": "vite build && wrangler dev --remote",
+    "dev:local": "vite build && wrangler dev --local",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "npm run build && npm run db:migrations:apply && wrangler deploy",
+    "db:migrations:apply": "wrangler d1 migrations apply DB --remote",
+    "db:migrations:apply:local": "wrangler d1 migrations apply DB --local"
   },
   "dependencies": {
     "@cloudflare/kv-asset-handler": "^0.4.0",
@@ -15,17 +20,33 @@
     "@dnd-kit/sortable": "7.0.2",
     "@dnd-kit/utilities": "3.2.2",
     "@google/genai": "^1.15.0",
+    "@vitejs/plugin-react": "^5.0.1",
+    "lucide-react": "^0.540.0",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-router-dom": "6.25.1"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.11.7",
+    "@cloudflare/workers-types": "^4.20250821.0",
     "@types/node": "^22.14.0",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "typescript": "~5.8.2",
     "vite": "^6.2.0",
     "wrangler": "^4.32.0"
+  },
+  "cloudflare": {
+    "bindings": {
+      "DB": {
+        "description": "D1 database for storing user profiles and links"
+      },
+      "IMAGES": {
+        "description": "R2 bucket for storing uploaded profile images and media files"
+      },
+      "GEMINI_API_KEY": {
+        "description": "Your **Google Gemini API key** for AI features. Get your API key from [Google AI Studio](https://aistudio.google.com/app/apikey)"
+      }
+    }
   }
 }

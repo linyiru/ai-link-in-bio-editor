@@ -3,6 +3,7 @@ import { useUserData } from '../hooks/useUserData';
 import type { ThemeSettings } from '../types';
 import { generateBio, isAiAvailable } from '../services/geminiService';
 import { SparklesIcon } from './icons';
+import ImageUpload from './ImageUpload';
 
 interface EditorProps {
   userData: ReturnType<typeof useUserData>[0];
@@ -29,15 +30,11 @@ const ProfileEditor: React.FC<EditorProps> = ({ userData, setUserData }) => {
     <div className="space-y-6">
         <div className="space-y-4">
           <div>
-            <label htmlFor="profile-image-url" className="block text-sm font-medium text-gray-400 mb-2">Profile Picture URL</label>
-            <input
-              id="profile-image-url"
-              type="text"
-              value={userData.profile.imageUrl}
-              onChange={e => handleProfileChange('imageUrl', e.target.value)}
-              placeholder="https://example.com/avatar.png"
-              aria-label="Profile picture URL"
-              className="w-full px-4 py-2.5 bg-gray-900 border border-gray-700 rounded-lg text-white focus:ring-blue-500 focus:border-blue-500 transition"
+            <label className="block text-sm font-medium text-gray-400 mb-4">Profile Picture</label>
+            <ImageUpload
+              currentImageUrl={userData.profile.imageUrl}
+              onImageUploaded={(imageUrl) => handleProfileChange('imageUrl', imageUrl)}
+              className="flex flex-col items-center"
             />
           </div>
           <div>

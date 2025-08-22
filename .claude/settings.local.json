@@ -16,9 +16,24 @@
       "Bash(rm:*)",
       "Bash(npm search:*)",
       "Bash(git init:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(gh repo create:*)",
+      "Bash(npx tsc:*)",
+      "Bash(wrangler r2 bucket:*)",
+      "Bash(nvm list:*)",
+      "Bash(export PATH=/Users/linyiru/.nvm/versions/node/v20.19.0/bin:$PATH)",
+      "Bash(curl:*)",
+      "Bash(npm create:*)",
+      "Bash(mkdir:*)",
+      "Bash(npx react-router:*)",
+      "Bash(npm run:*)",
+      "Bash(npx vite:*)"
     ],
     "deny": [],
-    "ask": []
+    "ask": [],
+    "additionalDirectories": [
+      "/private/tmp"
+    ]
   }
 }

@@ -7,6 +7,8 @@ import { DndContext, closestCenter, PointerSensor, KeyboardSensor, useSensor, us
 import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
+import IconPicker from './IconPicker';
+import * as LucideIcons from 'lucide-react';
 
 interface EditorProps {
   userData: ReturnType<typeof useUserData>[0];
@@ -31,7 +33,7 @@ interface LinkItemProps {
   isEditing: boolean;
   themeStyles: ReturnType<typeof getThemeStyles>;
   onEdit: (id: string) => void;
-  onSave: (id: string, title: string, url: string) => void;
+  onSave: (id: string, title: string, url: string, icon?: string) => void;
   onCancel: () => void;
   onDelete: (id: string) => void;
   onToggleActive: (isActive: boolean) => void;
@@ -44,16 +46,25 @@ interface LinkItemProps {
 const LinkItem = forwardRef<HTMLDivElement, LinkItemProps>(({ link, isEditing, themeStyles, onEdit, onSave, onCancel, onDelete, onToggleActive, style, handleAttributes, handleListeners, showHandle = true }, ref) => {
     const [editTitle, setEditTitle] = useState(link.title);
     const [editUrl, setEditUrl] = useState(link.url);
+    const [editIcon, setEditIcon] = useState(link.icon || '');
+    const [showIconPicker, setShowIconPicker] = useState(false);
 
     useEffect(() => {
         if (isEditing) {
             setEditTitle(link.title);
             setEditUrl(link.url);
+            setEditIcon(link.icon || '');
         }
-    }, [isEditing, link.title, link.url]);
+    }, [isEditing, link.title, link.url, link.icon]);
 
     const handleSave = () => {
-        onSave(link.id, editTitle, editUrl);
+        onSave(link.id, editTitle, editUrl, editIcon);
+    };
+
+    const renderIcon = (iconName: string) => {
+        if (!iconName) return <LucideIcons.Link size={20} />;
+        const IconComponent = (LucideIcons as any)[iconName];
+        return IconComponent ? <IconComponent size={20} /> : <LucideIcons.Link size={20} />;
     };
 
     return (
@@ -86,6 +97,22 @@ const LinkItem = forwardRef<HTMLDivElement, LinkItemProps>(({ link, isEditing, t
                             placeholder="Link URL"
                             aria-label="Link URL"
                         />
+                        <div className="space-y-2">
+                            <label className="text-sm text-gray-300">Icon</label>
+                            <button
+                                type="button"
+                                onClick={() => setShowIconPicker(true)}
+                                className="flex items-center gap-2 w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white hover:bg-gray-700 transition-colors"
+                            >
+                                <div className="text-gray-300">
+                                    {renderIcon(editIcon)}
+                                </div>
+                                <span className="flex-1 text-left">
+                                    {editIcon || 'Choose icon...'}
+                                </span>
+                                <LucideIcons.ChevronDown size={16} className="text-gray-400" />
+                            </button>
+                        </div>
                         <div className="flex justify-end gap-2">
                             <button onClick={onCancel} className="px-3 py-1.5 text-sm font-medium text-gray-300 bg-gray-700 rounded-md hover:bg-gray-600">Cancel</button>
                             <button onClick={handleSave} className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${themeStyles.buttonClass}`}>Save</button>
@@ -94,7 +121,7 @@ const LinkItem = forwardRef<HTMLDivElement, LinkItemProps>(({ link, isEditing, t
                 ) : (
                     <>
                         <div className={`flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full transition-colors ${themeStyles.iconWrapperClass}`}>
-                            {getLinkIcon(link.url)}
+                            {renderIcon(link.icon || '')}
                         </div>
                         <div className="flex-grow overflow-hidden">
                             <p className="font-semibold text-white truncate">{link.title}</p>
@@ -118,6 +145,13 @@ const LinkItem = forwardRef<HTMLDivElement, LinkItemProps>(({ link, isEditing, t
                     </>
                 )}
             </div>
+            {showIconPicker && (
+                <IconPicker
+                    selectedIcon={editIcon}
+                    onIconSelect={setEditIcon}
+                    onClose={() => setShowIconPicker(false)}
+                />
+            )}
         </div>
     );
 });
@@ -177,6 +211,7 @@ const LinksEditor: React.FC<EditorProps> = ({ userData, setUserData }) => {
             title: newTitle,
             url: newUrl,
             isActive: true,
+            icon: 'Link', // Default icon
         };
         setUserData(prev => ({ ...prev, links: [...prev.links, newLink] }));
         setNewTitle('');
@@ -194,9 +229,12 @@ const LinksEditor: React.FC<EditorProps> = ({ userData, setUserData }) => {
         setUserData(prev => ({ ...prev, links: prev.links.filter(link => link.id !== id) }));
     }, [setUserData]);
 
-    const handleSaveEdit = (id: string, title: string, url: string) => {
+    const handleSaveEdit = (id: string, title: string, url: string, icon?: string) => {
         handleLinkChange(id, 'title', title);
         handleLinkChange(id, 'url', url);
+        if (icon !== undefined) {
+            handleLinkChange(id, 'icon', icon);
+        }
         setEditingLinkId(null);
     }
     

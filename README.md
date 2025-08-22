@@ -1,48 +1,123 @@
-# Link-in-Bio Editor
+# AI Link-in-Bio Editor
 
-An elegant Link-in-Bio editor built with React + Vite. It supports drag-and-drop link sorting powered by dnd-kit (vertical sortable with handles), live theme customization, and a mobile preview frame.
+An elegant, AI-powered Link-in-Bio editor built with React and deployed on Cloudflare Workers. Create beautiful, personalized link pages that can be shared and stored in the cloud.
 
-Design inspired by the v0 community work: [v0.me/Zz6mBLdU9bC](https://v0.app/community/v0-me-Zz6mBLdU9bC). Big thanks to the original author for the concept and layout inspiration.
+## ✨ Features
 
-## Deploy to Cloudflare (Workers Builds)
+- 🎨 **Live Theme Customization** - Multiple color palettes, fonts, and styles
+- 📱 **Mobile-First Design** - Responsive preview and optimized for all devices  
+- 🤖 **AI Integration** - Powered by Google Gemini for smart content suggestions
+- ☁️ **Cloud Storage** - Save and share your pages with persistent Cloudflare D1 database
+- 📸 **Image Upload** - Upload profile pictures directly to Cloudflare R2 storage
+- 🔗 **Shareable Links** - Each page gets a unique URL for easy sharing
+- 🚀 **Fast Deployment** - One-click deployment to Cloudflare Workers
 
-Use the Deploy to Cloudflare button to quickly clone this repo into your GitHub/GitLab and deploy it to your own Cloudflare account.
+## 🚀 Quick Deploy
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=<YOUR_REPO_URL>)
+Deploy your own instance to Cloudflare Workers with one click:
 
-Replace `<YOUR_REPO_URL>` with the HTTPS URL of your public GitHub/GitLab repository (for example: `https://github.com/your-user/ai-link-in-bio-editor`). If you have a monorepo, you can also append a subdirectory to the URL.
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/YOUR_USERNAME/YOUR_REPO_NAME)
 
-Notes and best practices from the official docs:
-- If you already deployed with Workers Builds, you can generate this button from the Cloudflare dashboard (Share button on your Worker).
-- If no custom `deploy` script is found, Cloudflare defaults to `npx wrangler deploy`. If no `build` script is found, it is left blank.
-- To provision resources automatically (KV, D1, R2, DO, Queues, Vectorize, Workers AI, etc.), include a Wrangler configuration and sensible default binding names in your repo.
+> **Note**: Replace the URL with your actual repository URL. The deployment will:
+> - Automatically provision a D1 database for storing user data  
+> - Set up the Worker with proper routing and API endpoints
+> - Configure environment variables for the Gemini API (optional)
 
-## Local Development
+### What gets deployed?
+
+- **D1 Database**: Stores user profiles, links, and theme settings
+- **R2 Bucket**: Stores uploaded profile images and media files
+- **Worker Functions**: API endpoints for saving/loading user data and image upload
+- **Static Assets**: React SPA served from Cloudflare's edge network
+- **Custom Domain**: Your app available at `your-worker.your-subdomain.workers.dev`
+
+## 💻 Local Development
 
 Prerequisites: Node.js 18+
 
-1. Install dependencies:
+1. **Install dependencies:**
    ```bash
    npm install
    ```
-2. Configure API key (optional, for AI features):
-   - Create `.env.local` and set `GEMINI_API_KEY=your-key`
-3. Run the app:
+
+2. **Set up environment variables:**
+   ```bash
+   # Copy example file
+   cp .dev.vars.example .dev.vars
+   
+   # Edit .dev.vars with your API keys
+   GEMINI_API_KEY=your-gemini-api-key-here
+   ```
+
+3. **Set up local database:**
+   ```bash
+   # Apply migrations locally
+   npm run db:migrations:apply:local
+   ```
+
+4. **Choose your development mode:**
+
+   ### Option A: Full Local Development (Recommended for UI work)
    ```bash
    npm run dev
    ```
+   - Uses local D1 database
+   - Image uploads use base64 fallback (no R2 required)
+   - Fastest for frontend development
 
-## Scripts
+   ### Option B: Remote Development (For testing R2 image uploads)
+   ```bash
+   npm run dev:remote
+   ```
+   - Uses remote D1 database and R2 bucket
+   - Requires Cloudflare account and deployed resources
+   - Best for testing full upload functionality
 
-- `npm run dev` – Start Vite dev server
-- `npm run build` – Production build
-- `npm run preview` – Preview production build locally
+   ### Option C: Hybrid Local Development
+   ```bash
+   npm run dev:local
+   ```
+   - Uses local D1 database
+   - Uses local R2 simulation (if configured)
+   - Good balance between local and cloud features
 
-## Accessibility
+## 📋 Scripts
 
-We add `aria-label`, `title`, and proper `label` elements for form controls and icon buttons. If you notice any accessibility issue, please open an issue or PR.
+- `npm run dev` – Start Vite dev server with local Wrangler (base64 image fallback)
+- `npm run dev:remote` – Build and start with remote D1/R2 (full cloud features)  
+- `npm run dev:local` – Build and start with local D1/R2 simulation
+- `npm run build` – Build React app for production
+- `npm run deploy` – Deploy to Cloudflare (runs migrations + wrangler deploy)
+- `npm run db:migrations:apply` – Apply database migrations to remote D1
+- `npm run db:migrations:apply:local` – Apply migrations to local D1
 
-## Credits
+## 🗄️ Database Schema
 
-- Design inspiration: [v0.me/Zz6mBLdU9bC](https://v0.app/community/v0-me-Zz6mBLdU9bC)
+The app uses Cloudflare D1 (SQLite) with the following structure:
+
+- **users** - Stores profile information and theme settings
+- **links** - Stores user links with ordering and active status
+
+Database is automatically provisioned during Deploy to Cloudflare process.
+
+## 🎯 API Endpoints
+
+- `GET /api/page/:slug` - Retrieve public page data
+- `POST /api/save` - Save/update user data (returns shareable URL)
+- `POST /api/upload-image` - Upload profile image to R2 (or base64 fallback in local dev)
+
+## 🔧 Environment Variables
+
+Required for full functionality:
+
+- `GEMINI_API_KEY` - Google Gemini API key for AI features ([Get yours here](https://aistudio.google.com/app/apikey))
+
+## ♿ Accessibility
+
+This app follows accessibility best practices with proper ARIA labels, semantic HTML, and keyboard navigation support.
+
+## 📄 Credits
+
+- Design inspiration: [v0 community](https://v0.app/community/v0-me-Zz6mBLdU9bC)
 - Drag-and-drop: [dnd-kit](https://github.com/clauderic/dnd-kit)
+- Deployment: [Cloudflare Workers](https://workers.cloudflare.com/)

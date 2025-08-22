@@ -4,6 +4,7 @@ export interface Link {
   title: string;
   url: string;
   isActive: boolean;
+  icon?: string; // Icon name from Lucide React library
 }
 
 export interface Profile {
