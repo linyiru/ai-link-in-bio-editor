@@ -141,27 +141,15 @@ export async function handleApiRequest(request, env, ctx) {
             imageUrl = `${env.R2_PUBLIC_URL}/${filename}`;
             console.log('Using configured R2_PUBLIC_URL:', imageUrl);
           } else {
-            // Option 2: Try r2.dev public access (requires bucket to be public)
+            // Option 2: Use r2.dev public URL directly (assumes bucket has public access enabled)
             const bucketName = 'link-in-bio-images'; // Use the actual bucket name from wrangler.toml
-            const r2DevUrl = `https://${bucketName}.r2.dev/${filename}`;
+            imageUrl = `https://${bucketName}.r2.dev/${filename}`;
             
-            try {
-              // Test if the bucket has public access enabled by making a quick HEAD request
-              const testResponse = await fetch(r2DevUrl, { method: 'HEAD' });
-              if (testResponse.ok) {
-                imageUrl = r2DevUrl;
-                console.log('Using R2.dev public URL:', imageUrl);
-              } else {
-                throw new Error(`R2 bucket not public (${testResponse.status})`);
-              }
-            } catch (error) {
-              // Option 3: Fallback to API proxy
-              console.log('R2.dev access failed, using API proxy:', error.message);
-              console.log('To enable direct R2 access:');
-              console.log('1. Enable public access on your R2 bucket, OR');
-              console.log('2. Set up a custom domain and configure R2_PUBLIC_URL environment variable');
-              imageUrl = `${url.origin}/api/image/${filename}`;
-            }
+            console.log('Using R2.dev public URL:', imageUrl);
+            console.log('⚠️  If image fails to load, enable public access on your R2 bucket:');
+            console.log('   1. Go to Cloudflare Dashboard → R2 Object Storage → link-in-bio-images');
+            console.log('   2. Click Settings tab → Enable "Public URL Access"');
+            console.log('   3. Alternative: Set R2_PUBLIC_URL environment variable for custom domain');
           }
         } else {
           // Fallback for local development: return base64 data URL
