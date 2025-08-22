@@ -2,9 +2,12 @@ name = "ai-link-in-bio-editor"
 compatibility_date = "2025-08-21"
 main = "src/worker.js"
 
-# Assets configuration for React SPA
+# Assets configuration for React SPA  
+# Note: Deploy to Cloudflare may not support [assets] properly
+# Assets will be handled by the worker fallback mechanism
 [assets]
 directory = "./dist"
+not_found_handling = "single-page-application"
 
 # D1 Database binding
 [[d1_databases]]
