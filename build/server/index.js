@@ -2,7 +2,7 @@ import { jsx, jsxs, Fragment } from "react/jsx-runtime";
 import { renderToReadableStream } from "react-dom/server";
 import { ServerRouter, UNSAFE_withComponentProps, Meta, Links, Outlet, ScrollRestoration, Scripts, useLoaderData, Link } from "react-router";
 import * as LucideIcons from "lucide-react";
-import { useState, useEffect, forwardRef, useMemo, useCallback, useRef } from "react";
+import { useState, forwardRef, useEffect, useMemo, useCallback, useRef } from "react";
 import { useSensors, useSensor, PointerSensor, KeyboardSensor, DndContext, closestCenter, DragOverlay } from "@dnd-kit/core";
 import { sortableKeyboardCoordinates, arrayMove, SortableContext, verticalListSortingStrategy, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -350,7 +350,7 @@ const BioLinkPage = ({ userData, isPreview = false }) => {
     ] }) })
   ] });
 };
-const demoUserData = {
+const demoUserData$1 = {
   profile: {
     name: "AI Link-in-Bio",
     bio: "Create your beautiful link page ✨",
@@ -391,13 +391,13 @@ const demoUserData = {
     fontFamily: "sans"
   }
 };
-async function loader$1({
+async function loader$2({
   context
 }) {
   const env = context.cloudflare.env;
   try {
     if (!env.DB) {
-      return demoUserData;
+      return demoUserData$1;
     }
     const userResult = await env.DB.prepare(`
       SELECT id, name, bio, image_url, theme_settings 
@@ -406,7 +406,7 @@ async function loader$1({
       LIMIT 1
     `).first();
     if (!userResult) {
-      return demoUserData;
+      return demoUserData$1;
     }
     const linksResult = await env.DB.prepare(`
       SELECT link_id, title, url, is_active, icon
@@ -432,7 +432,7 @@ async function loader$1({
     return userData;
   } catch (error) {
     console.error("Failed to load user data for SSR:", error);
-    return demoUserData;
+    return demoUserData$1;
   }
 }
 const home = UNSAFE_withComponentProps(function HomePage() {
@@ -447,7 +447,7 @@ const home = UNSAFE_withComponentProps(function HomePage() {
 const route1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: home,
-  loader: loader$1
+  loader: loader$2
 }, Symbol.toStringTag, { value: "Module" }));
 const API_BASE = "/api";
 class DataService {
@@ -494,30 +494,6 @@ class DataService {
     }
   }
 }
-const useUserData = () => {
-  const [userData, setUserData] = useState(INITIAL_USER_DATA);
-  const [isLoading, setIsLoading] = useState(true);
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const data = await DataService.loadUserData();
-        if (data) {
-          data.themeSettings = {
-            ...DEFAULT_THEME_SETTINGS,
-            ...data.themeSettings || {}
-          };
-          setUserData(data);
-        }
-      } catch (error) {
-        console.error("Failed to load user data from server:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    loadData();
-  }, []);
-  return [userData, setUserData, isLoading];
-};
 const LinkIcon = ({ className }) => /* @__PURE__ */ jsx("svg", { xmlns: "http://www.w3.org/2000/svg", className, fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", children: /* @__PURE__ */ jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" }) });
 const UserIcon = ({ className }) => /* @__PURE__ */ jsx("svg", { xmlns: "http://www.w3.org/2000/svg", className, fill: "none", viewBox: "0 0 24 24", strokeWidth: 1.5, stroke: "currentColor", children: /* @__PURE__ */ jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", d: "M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" }) });
 const PaletteIcon = ({ className }) => /* @__PURE__ */ jsx("svg", { xmlns: "http://www.w3.org/2000/svg", className, fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", children: /* @__PURE__ */ jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h8a2 2 0 002-2v-4a2 2 0 00-2-2h-8a2 2 0 00-2 2v4a2 2 0 002 2z" }) });
@@ -766,8 +742,9 @@ const LinksEditor = ({ userData, setUserData }) => {
   );
   const handleAddLink = () => {
     if (!newTitle || !newUrl) return;
+    const newId = `link_${userData.links.length}_${newTitle.replace(/\s+/g, "_").toLowerCase()}`;
     const newLink = {
-      id: `${Date.now()}`,
+      id: newId,
       title: newTitle,
       url: newUrl,
       isActive: true,
@@ -1544,8 +1521,70 @@ const TabButton = ({ isActive, onClick, children }) => /* @__PURE__ */ jsx(
     children
   }
 );
+const demoUserData = {
+  profile: {
+    name: "Your Name",
+    bio: "Your bio description here",
+    imageUrl: ""
+  },
+  links: [],
+  themeSettings: {
+    isDarkMode: true,
+    colorPaletteId: "default",
+    backgroundColorId: "default",
+    backgroundPattern: "none",
+    cardShadow: true,
+    borderRadius: "lg",
+    fontFamily: "sans"
+  }
+};
+async function loader$1({
+  context
+}) {
+  const env = context.cloudflare.env;
+  try {
+    if (!env.DB) {
+      return demoUserData;
+    }
+    const userResult = await env.DB.prepare(`
+      SELECT id, name, bio, image_url, theme_settings 
+      FROM users 
+      ORDER BY id DESC 
+      LIMIT 1
+    `).first();
+    if (!userResult) {
+      return demoUserData;
+    }
+    const linksResult = await env.DB.prepare(`
+      SELECT link_id, title, url, is_active, icon
+      FROM links 
+      WHERE user_id = ? 
+      ORDER BY order_index ASC
+    `).bind(userResult.id).all();
+    const userData = {
+      profile: {
+        name: userResult.name,
+        bio: userResult.bio || "",
+        imageUrl: userResult.image_url || ""
+      },
+      links: linksResult.results.map((link) => ({
+        id: link.link_id,
+        title: link.title,
+        url: link.url,
+        isActive: Boolean(link.is_active),
+        icon: link.icon || "Link"
+      })),
+      themeSettings: JSON.parse(userResult.theme_settings)
+    };
+    return userData;
+  } catch (error) {
+    console.error("Failed to load user data for admin SSR:", error);
+    return demoUserData;
+  }
+}
 const admin = UNSAFE_withComponentProps(function AdminPage() {
-  const [userData, setUserData, isDataLoading] = useUserData();
+  const initialUserData = useLoaderData();
+  const [userData, setUserData] = useState(initialUserData);
   const [activeTab, setActiveTab] = useState("profile");
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -1576,20 +1615,6 @@ const admin = UNSAFE_withComponentProps(function AdminPage() {
       setIsLoading(false);
     }
   };
-  if (isDataLoading) {
-    return /* @__PURE__ */ jsx("div", {
-      className: "min-h-screen bg-gray-900 text-gray-300 flex items-center justify-center",
-      children: /* @__PURE__ */ jsxs("div", {
-        className: "text-center",
-        children: [/* @__PURE__ */ jsx("div", {
-          className: "animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"
-        }), /* @__PURE__ */ jsx("p", {
-          className: "text-gray-400",
-          children: "Loading editor..."
-        })]
-      })
-    });
-  }
   return /* @__PURE__ */ jsxs("div", {
     className: "min-h-screen bg-gray-900 text-gray-300",
     children: [/* @__PURE__ */ jsx("header", {
@@ -1709,7 +1734,8 @@ const admin = UNSAFE_withComponentProps(function AdminPage() {
 });
 const route2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  default: admin
+  default: admin,
+  loader: loader$1
 }, Symbol.toStringTag, { value: "Module" }));
 const about = UNSAFE_withComponentProps(function AboutPage() {
   return /* @__PURE__ */ jsx("div", {
@@ -1928,7 +1954,7 @@ async function action({
       await env.DB.prepare(`INSERT INTO links (user_id, link_id, title, url, icon, is_active, order_index) 
          VALUES (?, ?, ?, ?, ?, ?, ?)`).bind(
         userId,
-        `link_${Date.now()}_${i}`,
+        `link_${userId}_${i}`,
         // Generate unique link_id
         link.title,
         link.url,
@@ -1954,7 +1980,7 @@ const route6 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   __proto__: null,
   action
 }, Symbol.toStringTag, { value: "Module" }));
-const serverManifest = { "entry": { "module": "/assets/entry.client-D0tFyxRz.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/index-DvEMbgo5.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/root-BNOUgMe-.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/index-DvEMbgo5.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/home": { "id": "routes/home", "parentId": "root", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/home-DUsAFJYC.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/BioLinkPage-DqpxeZS-.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/admin": { "id": "routes/admin", "parentId": "root", "path": "admin", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/admin-CDINx10q.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/BioLinkPage-DqpxeZS-.js", "/assets/dataService-Bzs1NMx2.js", "/assets/index-DvEMbgo5.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/about": { "id": "routes/about", "parentId": "root", "path": "about", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/about-D8Heu3gi.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/preview": { "id": "routes/preview", "parentId": "root", "path": "preview", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/preview-DtrggnDZ.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/BioLinkPage-DqpxeZS-.js", "/assets/dataService-Bzs1NMx2.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/api.data": { "id": "routes/api.data", "parentId": "root", "path": "api/data", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/api.data-l0sNRNKZ.js", "imports": [], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/api.save": { "id": "routes/api.save", "parentId": "root", "path": "api/save", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/api.save-l0sNRNKZ.js", "imports": [], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 } }, "url": "/assets/manifest-950b8357.js", "version": "950b8357", "sri": void 0 };
+const serverManifest = { "entry": { "module": "/assets/entry.client-D0tFyxRz.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/index-DvEMbgo5.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/root-BNOUgMe-.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/index-DvEMbgo5.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/home": { "id": "routes/home", "parentId": "root", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/home-DUsAFJYC.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/BioLinkPage-DqpxeZS-.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/admin": { "id": "routes/admin", "parentId": "root", "path": "admin", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/admin-Coyj0xUF.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/dataService-Bzs1NMx2.js", "/assets/BioLinkPage-DqpxeZS-.js", "/assets/index-DvEMbgo5.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/about": { "id": "routes/about", "parentId": "root", "path": "about", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/about-D8Heu3gi.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/preview": { "id": "routes/preview", "parentId": "root", "path": "preview", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/preview-DtrggnDZ.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/BioLinkPage-DqpxeZS-.js", "/assets/dataService-Bzs1NMx2.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/api.data": { "id": "routes/api.data", "parentId": "root", "path": "api/data", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/api.data-l0sNRNKZ.js", "imports": [], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/api.save": { "id": "routes/api.save", "parentId": "root", "path": "api/save", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/api.save-l0sNRNKZ.js", "imports": [], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 } }, "url": "/assets/manifest-3de71488.js", "version": "3de71488", "sri": void 0 };
 const assetsBuildDirectory = "build/client";
 const basename = "/";
 const future = { "unstable_middleware": false, "unstable_optimizeDeps": false, "unstable_splitRouteModules": false, "unstable_subResourceIntegrity": false, "unstable_viteEnvironmentApi": false };

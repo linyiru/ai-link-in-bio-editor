@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState, forwardRef } from 'react';
-import { useUserData } from '../hooks/useUserData';
-import type { Link } from '../types';
+import type { Link, UserData } from '../types';
 import { getThemeStyles } from '../utils/themeUtils';
 import { PlusIcon, PencilIcon, TrashIcon, WebsiteIcon, TwitterXIcon, GitHubIcon, LinkedInIcon, DragHandleIcon } from './icons';
 import { DndContext, closestCenter, PointerSensor, KeyboardSensor, useSensor, useSensors, DragStartEvent, DragEndEvent, DragCancelEvent, DragOverlay } from '@dnd-kit/core';
@@ -11,8 +10,8 @@ import IconPicker from './IconPicker';
 import * as LucideIcons from 'lucide-react';
 
 interface EditorProps {
-  userData: ReturnType<typeof useUserData>[0];
-  setUserData: ReturnType<typeof useUserData>[1];
+  userData: UserData;
+  setUserData: React.Dispatch<React.SetStateAction<UserData>>;
 }
 
 const getLinkIcon = (url: string) => {
@@ -206,8 +205,10 @@ const LinksEditor: React.FC<EditorProps> = ({ userData, setUserData }) => {
 
     const handleAddLink = () => {
         if (!newTitle || !newUrl) return;
+        // Generate ID based on current links length to avoid timing-dependent issues
+        const newId = `link_${userData.links.length}_${newTitle.replace(/\s+/g, '_').toLowerCase()}`;
         const newLink: Link = {
-            id: `${Date.now()}`,
+            id: newId,
             title: newTitle,
             url: newUrl,
             isActive: true,

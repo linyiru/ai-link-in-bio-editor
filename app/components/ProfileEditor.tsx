@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import { useUserData } from '../hooks/useUserData';
-import type { ThemeSettings } from '../types';
+import type { ThemeSettings, UserData } from '../types';
 import { generateBio, isAiAvailable } from '../services/geminiService';
 import { SparklesIcon } from './icons';
 import ImageUpload from './ImageUpload';
 
 interface EditorProps {
-  userData: ReturnType<typeof useUserData>[0];
-  setUserData: ReturnType<typeof useUserData>[1];
+  userData: UserData;
+  setUserData: React.Dispatch<React.SetStateAction<UserData>>;
 }
 
 const ProfileEditor: React.FC<EditorProps> = ({ userData, setUserData }) => {

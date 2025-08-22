@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router';
-import { useUserData } from '../hooks/useUserData';
+import { Link, useLoaderData } from 'react-router';
+import type { LoaderFunctionArgs } from "react-router";
 import { DataService } from '../services/dataService';
-import type { ThemeSettings } from '../types';
+import type { ThemeSettings, UserData } from '../types';
 import BioLinkPage from '../components/BioLinkPage';
 import { LinkIcon, PaletteIcon, UserIcon, LayoutTemplateIcon } from '../components/icons';
 import LinksEditor from '../components/LinksEditor';
@@ -14,8 +14,79 @@ import TabButton from '../components/TabButton';
 
 type EditorTab = 'profile' | 'links' | 'theme';
 
+// Demo data for admin page when no database data exists
+const demoUserData: UserData = {
+  profile: {
+    name: "Your Name",
+    bio: "Your bio description here",
+    imageUrl: ""
+  },
+  links: [],
+  themeSettings: {
+    isDarkMode: true,
+    colorPaletteId: "default",
+    backgroundColorId: "default",
+    backgroundPattern: "none",
+    cardShadow: true,
+    borderRadius: "lg",
+    fontFamily: "sans"
+  }
+};
+
+export async function loader({ context }: LoaderFunctionArgs) {
+  const env = context.cloudflare.env;
+  
+  try {
+    if (!env.DB) {
+      return demoUserData;
+    }
+
+    // Get the first (and only) user's data
+    const userResult = await env.DB.prepare(`
+      SELECT id, name, bio, image_url, theme_settings 
+      FROM users 
+      ORDER BY id DESC 
+      LIMIT 1
+    `).first();
+
+    if (!userResult) {
+      return demoUserData;
+    }
+
+    // Get user links
+    const linksResult = await env.DB.prepare(`
+      SELECT link_id, title, url, is_active, icon
+      FROM links 
+      WHERE user_id = ? 
+      ORDER BY order_index ASC
+    `).bind(userResult.id).all();
+
+    const userData: UserData = {
+      profile: {
+        name: userResult.name as string,
+        bio: userResult.bio as string || '',
+        imageUrl: userResult.image_url as string || ''
+      },
+      links: linksResult.results.map((link: any) => ({
+        id: link.link_id,
+        title: link.title,
+        url: link.url,
+        isActive: Boolean(link.is_active),
+        icon: link.icon || 'Link'
+      })),
+      themeSettings: JSON.parse(userResult.theme_settings as string)
+    };
+
+    return userData;
+  } catch (error) {
+    console.error('Failed to load user data for admin SSR:', error);
+    return demoUserData;
+  }
+}
+
 export default function AdminPage() {
-  const [userData, setUserData, isDataLoading] = useUserData();
+  const initialUserData = useLoaderData<typeof loader>();
+  const [userData, setUserData] = useState<UserData>(initialUserData);
   const [activeTab, setActiveTab] = useState<EditorTab>('profile');
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -48,17 +119,6 @@ export default function AdminPage() {
       setIsLoading(false);
     }
   };
-
-  if (isDataLoading) {
-    return (
-      <div className="min-h-screen bg-gray-900 text-gray-300 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading editor...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-300">

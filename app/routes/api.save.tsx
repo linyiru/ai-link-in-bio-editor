@@ -53,7 +53,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
          VALUES (?, ?, ?, ?, ?, ?, ?)`
       ).bind(
         userId,
-        `link_${Date.now()}_${i}`, // Generate unique link_id
+        `link_${userId}_${i}`, // Generate unique link_id
         link.title,
         link.url,
         link.icon || 'Link',

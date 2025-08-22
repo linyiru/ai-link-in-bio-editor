@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { useUserData } from '../hooks/useUserData';
-import type { ThemeSettings, BorderRadius, FontFamily, BackgroundPattern } from '../types';
+import type { ThemeSettings, BorderRadius, FontFamily, BackgroundPattern, UserData } from '../types';
 import { DEFAULT_THEME_SETTINGS, COLOR_PALETTES, BACKGROUND_COLORS, BACKGROUND_PATTERNS, BORDER_RADIUS_OPTIONS, FONT_FAMILY_OPTIONS } from '../constants';
 import { SunIcon } from './icons';
 
 interface EditorProps {
-  userData: ReturnType<typeof useUserData>[0];
-  setUserData: ReturnType<typeof useUserData>[1];
+  userData: UserData;
+  setUserData: React.Dispatch<React.SetStateAction<UserData>>;
 }
 
 const ThemeEditor: React.FC<EditorProps> = ({ userData, setUserData }) => {

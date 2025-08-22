@@ -42,7 +42,10 @@
       "WebFetch(domain:ai-link-in-bio-editor.kaik.workers.dev)",
       "Bash(CLOUDFLARE_ACCOUNT_ID=***ACCOUNT_ID_REMOVED*** npx wrangler tail --format=pretty)",
       "WebSearch",
-      "Bash(CLOUDFLARE_ACCOUNT_ID=***ACCOUNT_ID_REMOVED*** npx wrangler d1 execute DB --remote --command=\"SELECT sql FROM sqlite_master WHERE type=''table'' AND name=''links'';\")"
+      "Bash(CLOUDFLARE_ACCOUNT_ID=***ACCOUNT_ID_REMOVED*** npx wrangler d1 execute DB --remote --command=\"SELECT sql FROM sqlite_master WHERE type=''table'' AND name=''links'';\")",
+      "WebFetch(domain:reactjs.org)",
+      "WebFetch(domain:legacy.reactjs.org)",
+      "WebFetch(domain:react.dev)"
     ],
     "deny": [],
     "ask": [],
