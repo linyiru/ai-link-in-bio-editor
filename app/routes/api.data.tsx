@@ -19,10 +19,11 @@ export async function loader({ context }: LoaderFunctionArgs) {
     ).bind(userResult.id).all();
 
     const userData = {
-      id: userResult.id,
-      name: userResult.name,
-      bio: userResult.bio,
-      imageUrl: userResult.image_url,
+      profile: {
+        name: userResult.name,
+        bio: userResult.bio,
+        imageUrl: userResult.image_url
+      },
       themeSettings: userResult.theme_settings ? JSON.parse(userResult.theme_settings) : {
         isDarkMode: true,
         colorPaletteId: "default",
@@ -33,7 +34,7 @@ export async function loader({ context }: LoaderFunctionArgs) {
         fontFamily: "sans"
       },
       links: linksResult.results?.map((link: any) => ({
-        id: link.id,
+        id: link.id.toString(),
         title: link.title,
         url: link.url,
         icon: link.icon || 'Link',

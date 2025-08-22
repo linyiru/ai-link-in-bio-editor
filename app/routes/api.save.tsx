@@ -23,9 +23,9 @@ export async function action({ request, context }: ActionFunctionArgs) {
          theme_settings = ? 
          WHERE id = ?`
       ).bind(
-        userData.name,
-        userData.bio,
-        userData.imageUrl,
+        userData.profile.name,
+        userData.profile.bio,
+        userData.profile.imageUrl,
         JSON.stringify(userData.themeSettings),
         userId
       ).run();
@@ -34,9 +34,9 @@ export async function action({ request, context }: ActionFunctionArgs) {
         `INSERT INTO users (name, bio, image_url, theme_settings) 
          VALUES (?, ?, ?, ?)`
       ).bind(
-        userData.name,
-        userData.bio,
-        userData.imageUrl,
+        userData.profile.name,
+        userData.profile.bio,
+        userData.profile.imageUrl,
         JSON.stringify(userData.themeSettings)
       ).run();
       userId = 1; // First user

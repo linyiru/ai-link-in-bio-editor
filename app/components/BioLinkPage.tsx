@@ -11,7 +11,17 @@ interface BioLinkPageProps {
 }
 
 const BioLinkPage: React.FC<BioLinkPageProps> = ({ userData, isPreview = false }) => {
+  // Add defensive checks
+  if (!userData) {
+    return <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">Loading...</div>;
+  }
+  
   const { profile, links, themeSettings } = userData;
+  
+  // Additional defensive checks
+  if (!profile || !themeSettings) {
+    return <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">Loading...</div>;
+  }
 
   const {
     backgroundClass,
@@ -49,7 +59,7 @@ const BioLinkPage: React.FC<BioLinkPageProps> = ({ userData, isPreview = false }
           <h1 className={`text-2xl font-bold ${textClass}`}>{profile.name}</h1>
           <p className={`mt-2 mb-6 text-sm max-w-xs ${textClass}`}>{profile.bio}</p>
           <div className="w-full space-y-3">
-          {links
+          {(links || [])
             .filter(link => link.isActive)
             .map(link => (
               <a

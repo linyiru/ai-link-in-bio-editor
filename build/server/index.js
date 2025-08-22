@@ -294,7 +294,13 @@ function getThemeStyles(themeSettings) {
   };
 }
 const BioLinkPage = ({ userData, isPreview = false }) => {
+  if (!userData) {
+    return /* @__PURE__ */ jsx("div", { className: "min-h-screen bg-gray-900 text-white flex items-center justify-center", children: "Loading..." });
+  }
   const { profile, links: links2, themeSettings } = userData;
+  if (!profile || !themeSettings) {
+    return /* @__PURE__ */ jsx("div", { className: "min-h-screen bg-gray-900 text-white flex items-center justify-center", children: "Loading..." });
+  }
   const {
     backgroundClass,
     textClass,
@@ -325,7 +331,7 @@ const BioLinkPage = ({ userData, isPreview = false }) => {
       ),
       /* @__PURE__ */ jsx("h1", { className: `text-2xl font-bold ${textClass}`, children: profile.name }),
       /* @__PURE__ */ jsx("p", { className: `mt-2 mb-6 text-sm max-w-xs ${textClass}`, children: profile.bio }),
-      /* @__PURE__ */ jsx("div", { className: "w-full space-y-3", children: links2.filter((link) => link.isActive).map((link) => /* @__PURE__ */ jsxs(
+      /* @__PURE__ */ jsx("div", { className: "w-full space-y-3", children: (links2 || []).filter((link) => link.isActive).map((link) => /* @__PURE__ */ jsxs(
         "a",
         {
           href: link.url,
@@ -1859,10 +1865,11 @@ async function loader({
     }
     const linksResult = await env.DB.prepare(`SELECT id, title, url, icon, is_active FROM links WHERE user_id = ? ORDER BY order_index ASC`).bind(userResult.id).all();
     const userData = {
-      id: userResult.id,
-      name: userResult.name,
-      bio: userResult.bio,
-      imageUrl: userResult.image_url,
+      profile: {
+        name: userResult.name,
+        bio: userResult.bio,
+        imageUrl: userResult.image_url
+      },
       themeSettings: userResult.theme_settings ? JSON.parse(userResult.theme_settings) : {
         isDarkMode: true,
         colorPaletteId: "default",
@@ -1873,7 +1880,7 @@ async function loader({
         fontFamily: "sans"
       },
       links: ((_a = linksResult.results) == null ? void 0 : _a.map((link) => ({
-        id: link.id,
+        id: link.id.toString(),
         title: link.title,
         url: link.url,
         icon: link.icon || "Link",
@@ -1909,10 +1916,10 @@ async function action({
          bio = ?, 
          image_url = ?, 
          theme_settings = ? 
-         WHERE id = ?`).bind(userData.name, userData.bio, userData.imageUrl, JSON.stringify(userData.themeSettings), userId).run();
+         WHERE id = ?`).bind(userData.profile.name, userData.profile.bio, userData.profile.imageUrl, JSON.stringify(userData.themeSettings), userId).run();
     } else {
       await env.DB.prepare(`INSERT INTO users (name, bio, image_url, theme_settings) 
-         VALUES (?, ?, ?, ?)`).bind(userData.name, userData.bio, userData.imageUrl, JSON.stringify(userData.themeSettings)).run();
+         VALUES (?, ?, ?, ?)`).bind(userData.profile.name, userData.profile.bio, userData.profile.imageUrl, JSON.stringify(userData.themeSettings)).run();
       userId = 1;
     }
     await env.DB.prepare(`DELETE FROM links WHERE user_id = ?`).bind(userId).run();
@@ -1947,7 +1954,7 @@ const route6 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   __proto__: null,
   action
 }, Symbol.toStringTag, { value: "Module" }));
-const serverManifest = { "entry": { "module": "/assets/entry.client-D0tFyxRz.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/index-DvEMbgo5.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/root-BNOUgMe-.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/index-DvEMbgo5.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/home": { "id": "routes/home", "parentId": "root", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/home-CE7sm6St.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/BioLinkPage-CKfBq8JX.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/admin": { "id": "routes/admin", "parentId": "root", "path": "admin", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/admin-D4VDlZUb.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/BioLinkPage-CKfBq8JX.js", "/assets/dataService-Bzs1NMx2.js", "/assets/index-DvEMbgo5.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/about": { "id": "routes/about", "parentId": "root", "path": "about", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/about-D8Heu3gi.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/preview": { "id": "routes/preview", "parentId": "root", "path": "preview", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/preview-JmeVaFTX.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/BioLinkPage-CKfBq8JX.js", "/assets/dataService-Bzs1NMx2.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/api.data": { "id": "routes/api.data", "parentId": "root", "path": "api/data", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/api.data-l0sNRNKZ.js", "imports": [], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/api.save": { "id": "routes/api.save", "parentId": "root", "path": "api/save", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/api.save-l0sNRNKZ.js", "imports": [], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 } }, "url": "/assets/manifest-3052614f.js", "version": "3052614f", "sri": void 0 };
+const serverManifest = { "entry": { "module": "/assets/entry.client-D0tFyxRz.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/index-DvEMbgo5.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/root-BNOUgMe-.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/index-DvEMbgo5.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/home": { "id": "routes/home", "parentId": "root", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/home-DUsAFJYC.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/BioLinkPage-DqpxeZS-.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/admin": { "id": "routes/admin", "parentId": "root", "path": "admin", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/admin-CDINx10q.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/BioLinkPage-DqpxeZS-.js", "/assets/dataService-Bzs1NMx2.js", "/assets/index-DvEMbgo5.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/about": { "id": "routes/about", "parentId": "root", "path": "about", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/about-D8Heu3gi.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/preview": { "id": "routes/preview", "parentId": "root", "path": "preview", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/preview-DtrggnDZ.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/BioLinkPage-DqpxeZS-.js", "/assets/dataService-Bzs1NMx2.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/api.data": { "id": "routes/api.data", "parentId": "root", "path": "api/data", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/api.data-l0sNRNKZ.js", "imports": [], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/api.save": { "id": "routes/api.save", "parentId": "root", "path": "api/save", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/api.save-l0sNRNKZ.js", "imports": [], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 } }, "url": "/assets/manifest-950b8357.js", "version": "950b8357", "sri": void 0 };
 const assetsBuildDirectory = "build/client";
 const basename = "/";
 const future = { "unstable_middleware": false, "unstable_optimizeDeps": false, "unstable_splitRouteModules": false, "unstable_subResourceIntegrity": false, "unstable_viteEnvironmentApi": false };
