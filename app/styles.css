@@ -1,0 +1,150 @@
+@import "tailwindcss";
+
+@source "../**/*.{js,ts,jsx,tsx}";
+@source "../constants.ts";
+@source "../templates.ts";
+@source "../types.ts";
+
+@theme {
+  /* Define all palette colors as theme colors - using correct Tailwind v4 naming */
+  
+  /* Rose Theme */
+  --color-rose-primary: #F43F5E;
+  --color-rose-secondary: #FFFFFF;
+  --color-rose-accent-light: #881337;
+  --color-rose-accent-dark: #FECDD3;
+  
+  /* Green Theme */
+  --color-green-primary: #10B981;
+  --color-green-secondary: #FFFFFF;
+  --color-green-accent-light: #047857;
+  --color-green-accent-dark: #A7F3D0;
+  
+  /* Purple Theme */
+  --color-purple-primary: #8B5CF6;
+  --color-purple-secondary: #FFFFFF;
+  --color-purple-accent-light: #5B21B6;
+  --color-purple-accent-dark: #DDD6FE;
+  
+  /* Orange Theme */
+  --color-orange-primary: #F97316;
+  --color-orange-secondary: #FFFFFF;
+  --color-orange-accent-light: #9A3412;
+  --color-orange-accent-dark: #FED7AA;
+  
+  /* Blue Theme */
+  --color-blue-primary: #3B82F6;
+  --color-blue-secondary: #FFFFFF;
+  --color-blue-accent-light: #1E40AF;
+  --color-blue-accent-dark: #BFDBFE;
+  
+  /* Teal Theme */
+  --color-teal-primary: #14B8A6;
+  --color-teal-secondary: #FFFFFF;
+  --color-teal-accent-light: #0F766E;
+  --color-teal-accent-dark: #99F6E4;
+  
+  /* Pink Theme */
+  --color-pink-primary: #EC4899;
+  --color-pink-secondary: #FFFFFF;
+  --color-pink-accent-light: #9D2463;
+  --color-pink-accent-dark: #FBCFE8;
+  
+  /* Sky Theme */
+  --color-sky-primary: #0EA5E9;
+  --color-sky-secondary: #FFFFFF;
+  --color-sky-accent-light: #0369A1;
+  --color-sky-accent-dark: #7DD3FC;
+  
+  /* Mint Theme */
+  --color-mint-primary: #34D399;
+  --color-mint-secondary: #FFFFFF;
+  --color-mint-accent-light: #047857;
+  --color-mint-accent-dark: #A7F3D0;
+  
+  /* Lemon Theme */
+  --color-lemon-primary: #FACC15;
+  --color-lemon-secondary: #422006;
+  --color-lemon-accent-light: #713F12;
+  --color-lemon-accent-dark: #FDE047;
+  
+  /* Coral Theme */
+  --color-coral-primary: #FF7F50;
+  --color-coral-secondary: #FFFFFF;
+  --color-coral-accent-light: #B95C37;
+  --color-coral-accent-dark: #FFC0A9;
+  
+  /* Indigo Theme */
+  --color-indigo-primary: #4F46E5;
+  --color-indigo-secondary: #FFFFFF;
+  --color-indigo-accent-light: #312E81;
+  --color-indigo-accent-dark: #A5B4FC;
+  
+  /* Stone Theme */
+  --color-stone-primary: #78716C;
+  --color-stone-secondary: #FFFFFF;
+  --color-stone-accent-light: #292524;
+  --color-stone-accent-dark: #E7E5E4;
+  
+  /* Crimson Theme */
+  --color-crimson-primary: #DC2626;
+  --color-crimson-secondary: #FFFFFF;
+  --color-crimson-accent-light: #7F1D1D;
+  --color-crimson-accent-dark: #FECACA;
+  
+  /* Emerald Theme */
+  --color-emerald-primary: #059669;
+  --color-emerald-secondary: #FFFFFF;
+  --color-emerald-accent-light: #047857;
+  --color-emerald-accent-dark: #6EE7B7;
+  
+  /* Lavender Theme */
+  --color-lavender-primary: #C4B5FD;
+  --color-lavender-secondary: #FFFFFF;
+  --color-lavender-accent-light: #4338CA;
+  --color-lavender-accent-dark: #E0E7FF;
+  
+  /* Peach Theme */
+  --color-peach-primary: #FFDAB9;
+  --color-peach-secondary: #4D2C1B;
+  --color-peach-accent-light: #B95C37;
+  --color-peach-accent-dark: #FFD8B1;
+  
+  /* Olive Theme */
+  --color-olive-primary: #84CC16;
+  --color-olive-secondary: #1A2E05;
+  --color-olive-accent-light: #365314;
+  --color-olive-accent-dark: #D9F99D;
+  
+  /* Navy Theme */
+  --color-navy-primary: #1E3A8A;
+  --color-navy-secondary: #FFFFFF;
+  --color-navy-accent-light: #172554;
+  --color-navy-accent-dark: #93C5FD;
+  
+  /* Chocolate Theme */
+  --color-chocolate-primary: #78350F;
+  --color-chocolate-secondary: #FFFFFF;
+  --color-chocolate-accent-light: #451A03;
+  --color-chocolate-accent-dark: #FCD9B6;
+  
+  /* Slate Theme */
+  --color-slate-primary: #475569;
+  --color-slate-secondary: #FFFFFF;
+  --color-slate-accent-light: #1E293B;
+  --color-slate-accent-dark: #E2E8F0;
+  
+  /* Gold Theme */
+  --color-gold-primary: #FBBF24;
+  --color-gold-secondary: #FFFFFF;
+  --color-gold-accent-light: #B45309;
+  --color-gold-accent-dark: #FDE68A;
+  
+  /* Silver Theme */
+  --color-silver-primary: #D1D5DB;
+  --color-silver-secondary: #FFFFFF;
+  --color-silver-accent-light: #4B5563;
+  --color-silver-accent-dark: #F3F4F6;
+
+}
+

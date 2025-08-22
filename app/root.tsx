@@ -7,8 +7,10 @@ import {
 } from "react-router";
 
 import type { LinksFunction } from "react-router";
+import styles from "./styles.css?url";
 
 export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: styles },
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
     rel: "preconnect",
@@ -29,7 +31,6 @@ export default function App() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
-        <script src="https://cdn.tailwindcss.com"></script>
       </head>
       <body>
         <Outlet />
