@@ -112,6 +112,24 @@ Required for full functionality:
 
 - `GEMINI_API_KEY` - Google Gemini API key for AI features ([Get yours here](https://aistudio.google.com/app/apikey))
 
+## 📸 Image Upload Configuration
+
+For optimal image loading performance, configure R2 public access:
+
+### Option 1: Enable R2.dev Public Access (Development)
+1. Go to Cloudflare Dashboard → R2 Object Storage → Your Bucket
+2. Click "Settings" tab
+3. Enable "Public URL Access"
+4. Images will automatically use `https://your-bucket-name.r2.dev/` URLs
+
+### Option 2: Custom Domain (Production - Recommended)
+1. Set up a custom domain in Cloudflare R2 settings
+2. Add environment variable: `R2_PUBLIC_URL=https://images.yourdomain.com`
+3. Benefits: Better performance, caching, security features
+
+### Fallback Behavior
+Without public access, images use API proxy (`/api/image/filename`) which is slower but always works.
+
 ## ♿ Accessibility
 
 This app follows accessibility best practices with proper ARIA labels, semantic HTML, and keyboard navigation support.

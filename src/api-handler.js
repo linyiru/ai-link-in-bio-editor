@@ -135,12 +135,33 @@ export async function handleApiRequest(request, env, ctx) {
             },
           });
 
-          // For development, create a proxy URL through our API
-          // In production, you'd use a custom domain with R2 public access
-          if (env.NODE_ENV === 'development' || !env.R2_PUBLIC_URL || env.R2_PUBLIC_URL.includes('your-r2-bucket')) {
-            imageUrl = `${url.origin}/api/image/${filename}`;
-          } else {
+          // Determine the best URL strategy for serving images
+          if (env.R2_PUBLIC_URL && !env.R2_PUBLIC_URL.includes('your-r2-bucket')) {
+            // Option 1: Use configured public URL (custom domain or r2.dev)
             imageUrl = `${env.R2_PUBLIC_URL}/${filename}`;
+            console.log('Using configured R2_PUBLIC_URL:', imageUrl);
+          } else {
+            // Option 2: Try r2.dev public access (requires bucket to be public)
+            const bucketName = 'link-in-bio-images'; // Use the actual bucket name from wrangler.toml
+            const r2DevUrl = `https://${bucketName}.r2.dev/${filename}`;
+            
+            try {
+              // Test if the bucket has public access enabled by making a quick HEAD request
+              const testResponse = await fetch(r2DevUrl, { method: 'HEAD' });
+              if (testResponse.ok) {
+                imageUrl = r2DevUrl;
+                console.log('Using R2.dev public URL:', imageUrl);
+              } else {
+                throw new Error(`R2 bucket not public (${testResponse.status})`);
+              }
+            } catch (error) {
+              // Option 3: Fallback to API proxy
+              console.log('R2.dev access failed, using API proxy:', error.message);
+              console.log('To enable direct R2 access:');
+              console.log('1. Enable public access on your R2 bucket, OR');
+              console.log('2. Set up a custom domain and configure R2_PUBLIC_URL environment variable');
+              imageUrl = `${url.origin}/api/image/${filename}`;
+            }
           }
         } else {
           // Fallback for local development: return base64 data URL
