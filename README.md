@@ -112,23 +112,25 @@ Required for full functionality:
 
 - `GEMINI_API_KEY` - Google Gemini API key for AI features ([Get yours here](https://aistudio.google.com/app/apikey))
 
-## 📸 Image Upload Configuration
+## 📸 Image Upload Performance
 
-For optimal image loading performance, configure R2 public access:
+Images are served through optimized Worker API endpoints by default. For maximum performance in production:
 
-### Option 1: Enable R2.dev Public Access (Development)
-1. Go to Cloudflare Dashboard → R2 Object Storage → Your Bucket
-2. Click "Settings" tab
-3. Enable "Public URL Access"
-4. Images will automatically use `https://your-bucket-name.r2.dev/` URLs
+### Production Setup (Optional)
+1. **Set up a Custom Domain** for your R2 bucket in Cloudflare Dashboard
+2. **Add environment variable**: `R2_PUBLIC_URL=https://images.yourdomain.com` 
+3. **Benefits**: Direct CDN delivery, faster loading, better caching
 
-### Option 2: Custom Domain (Production - Recommended)
-1. Set up a custom domain in Cloudflare R2 settings
-2. Add environment variable: `R2_PUBLIC_URL=https://images.yourdomain.com`
-3. Benefits: Better performance, caching, security features
+### Default Behavior
+- Images use Worker API endpoints (`/api/image/filename`)
+- Includes proper caching headers and CORS support
+- Works immediately without any configuration
+- Good performance for most use cases
 
-### Fallback Behavior
-Without public access, images use API proxy (`/api/image/filename`) which is slower but always works.
+### Why Not r2.dev URLs?
+- r2.dev URLs are shared globally and can conflict between users
+- Each Deploy to Cloudflare user gets their own bucket instance
+- Worker API provides better security and consistent behavior
 
 ## ♿ Accessibility
 

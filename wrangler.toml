@@ -18,16 +18,17 @@ preview_database_id = "placeholder-preview-database-id"
 migrations_dir = "migrations"
 
 # R2 Bucket binding for image storage
-# For faster image loading, enable public access on your R2 bucket:
-# 1. Cloudflare Dashboard → R2 Object Storage → link-in-bio-images → Settings
-# 2. Enable "Public URL Access" to use https://link-in-bio-images.r2.dev/ URLs
+# Images are served through Worker API by default (/api/image/filename)
+# This provides good performance with proper caching and CORS headers
 [[r2_buckets]]
 binding = "IMAGES"
 bucket_name = "link-in-bio-images"
 preview_bucket_name = "link-in-bio-images-preview"
 
 [vars]
-# For production, set a custom domain for R2 images (optional but recommended):
+# Optional: For maximum performance, set up a custom domain for R2 images
+# 1. Configure custom domain in Cloudflare Dashboard → R2 → Your Bucket → Settings
+# 2. Set the custom domain URL below:
 # R2_PUBLIC_URL = "https://images.yourdomain.com"
 
 # Environment variables for your Gemini API key

@@ -137,19 +137,17 @@ export async function handleApiRequest(request, env, ctx) {
 
           // Determine the best URL strategy for serving images
           if (env.R2_PUBLIC_URL && !env.R2_PUBLIC_URL.includes('your-r2-bucket')) {
-            // Option 1: Use configured public URL (custom domain or r2.dev)
+            // Option 1: Use configured custom domain (recommended for production)
             imageUrl = `${env.R2_PUBLIC_URL}/${filename}`;
-            console.log('Using configured R2_PUBLIC_URL:', imageUrl);
+            console.log('Using configured R2_PUBLIC_URL (custom domain):', imageUrl);
           } else {
-            // Option 2: Use r2.dev public URL directly (assumes bucket has public access enabled)
-            const bucketName = 'link-in-bio-images'; // Use the actual bucket name from wrangler.toml
-            imageUrl = `https://${bucketName}.r2.dev/${filename}`;
-            
-            console.log('Using R2.dev public URL:', imageUrl);
-            console.log('⚠️  If image fails to load, enable public access on your R2 bucket:');
-            console.log('   1. Go to Cloudflare Dashboard → R2 Object Storage → link-in-bio-images');
-            console.log('   2. Click Settings tab → Enable "Public URL Access"');
-            console.log('   3. Alternative: Set R2_PUBLIC_URL environment variable for custom domain');
+            // Option 2: Use Worker API endpoint (default - always works, no setup needed)
+            imageUrl = `${url.origin}/api/image/${filename}`;
+            console.log('Using Worker API endpoint:', imageUrl);
+            console.log('💡 For faster loading, set up a custom domain:');
+            console.log('   1. Configure a custom domain for your R2 bucket in Cloudflare Dashboard');
+            console.log('   2. Set R2_PUBLIC_URL environment variable to your domain');
+            console.log('   3. This provides faster direct access with CDN benefits');
           }
         } else {
           // Fallback for local development: return base64 data URL
@@ -294,6 +292,10 @@ export async function handleApiRequest(request, env, ctx) {
           const headers = new Headers();
           object.writeHttpMetadata(headers);
           headers.set('etag', object.httpEtag);
+          
+          // Add cache headers for better performance
+          headers.set('Cache-Control', 'public, max-age=31536000, immutable'); // 1 year
+          headers.set('Access-Control-Allow-Origin', '*');
 
           return new Response(object.body, {
             headers,
