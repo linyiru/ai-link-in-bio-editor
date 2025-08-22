@@ -8,4 +8,6 @@ export default [
   route("preview", "routes/preview.tsx"),
   route("api/data", "routes/api.data.tsx"),
   route("api/save", "routes/api.save.tsx"),
+  route("api/upload-image", "routes/api.upload-image.tsx"),
+  route("api/image/:filename", "routes/api.image.$filename.tsx"),
 ] satisfies RouteConfig;

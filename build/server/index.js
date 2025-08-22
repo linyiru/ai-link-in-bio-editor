@@ -391,7 +391,7 @@ const demoUserData$1 = {
     fontFamily: "sans"
   }
 };
-async function loader$2({
+async function loader$3({
   context
 }) {
   const env = context.cloudflare.env;
@@ -447,7 +447,7 @@ const home = UNSAFE_withComponentProps(function HomePage() {
 const route1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: home,
-  loader: loader$2
+  loader: loader$3
 }, Symbol.toStringTag, { value: "Module" }));
 const API_BASE = "/api";
 class DataService {
@@ -914,8 +914,8 @@ const ImageUpload = ({
       setError("Please select an image file");
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      setError("File size must be less than 5MB");
+    if (file.size > 10 * 1024 * 1024) {
+      setError("File size must be less than 10MB");
       return;
     }
     setUploading(true);
@@ -1006,7 +1006,7 @@ const ImageUpload = ({
     /* @__PURE__ */ jsxs("p", { className: "text-gray-500 text-xs mt-2 text-center", children: [
       "Click or drag image to upload",
       /* @__PURE__ */ jsx("br", {}),
-      "Max 5MB, JPG/PNG"
+      "Max 10MB, auto-compressed to 400x400px"
     ] })
   ] });
 };
@@ -1538,7 +1538,7 @@ const demoUserData = {
     fontFamily: "sans"
   }
 };
-async function loader$1({
+async function loader$2({
   context
 }) {
   const env = context.cloudflare.env;
@@ -1735,7 +1735,7 @@ const admin = UNSAFE_withComponentProps(function AdminPage() {
 const route2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: admin,
-  loader: loader$1
+  loader: loader$2
 }, Symbol.toStringTag, { value: "Module" }));
 const about = UNSAFE_withComponentProps(function AboutPage() {
   return /* @__PURE__ */ jsx("div", {
@@ -1877,7 +1877,7 @@ const route4 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   __proto__: null,
   default: preview
 }, Symbol.toStringTag, { value: "Module" }));
-async function loader({
+async function loader$1({
   context
 }) {
   var _a;
@@ -1925,9 +1925,9 @@ async function loader({
 }
 const route5 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  loader
+  loader: loader$1
 }, Symbol.toStringTag, { value: "Module" }));
-async function action({
+async function action$1({
   request,
   context
 }) {
@@ -1978,9 +1978,169 @@ async function action({
 }
 const route6 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
+  action: action$1
+}, Symbol.toStringTag, { value: "Module" }));
+async function compressImage(imageFile, maxWidth = 400, maxHeight = 400, quality = 0.8) {
+  return new Promise((resolve, reject) => {
+    try {
+      const canvas = new OffscreenCanvas(maxWidth, maxHeight);
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        throw new Error("Cannot get canvas context");
+      }
+      createImageBitmap(imageFile).then((imageBitmap) => {
+        const {
+          width,
+          height
+        } = imageBitmap;
+        let newWidth = width;
+        let newHeight = height;
+        if (width > height) {
+          if (width > maxWidth) {
+            newWidth = maxWidth;
+            newHeight = height * maxWidth / width;
+          }
+        } else {
+          if (height > maxHeight) {
+            newHeight = maxHeight;
+            newWidth = width * maxHeight / height;
+          }
+        }
+        canvas.width = newWidth;
+        canvas.height = newHeight;
+        ctx.drawImage(imageBitmap, 0, 0, newWidth, newHeight);
+        canvas.convertToBlob({
+          type: "image/jpeg",
+          quality
+        }).then((blob) => {
+          blob.arrayBuffer().then(resolve).catch(reject);
+        }).catch(reject);
+        imageBitmap.close();
+      }).catch(reject);
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+async function action({
+  request,
+  context
+}) {
+  const env = context.cloudflare.env;
+  try {
+    const formData = await request.formData();
+    const imageFile = formData.get("image");
+    if (!imageFile) {
+      return Response.json({
+        success: false,
+        error: "No image file provided"
+      }, {
+        status: 400
+      });
+    }
+    if (!imageFile.type.startsWith("image/")) {
+      return Response.json({
+        success: false,
+        error: "File must be an image"
+      }, {
+        status: 400
+      });
+    }
+    if (imageFile.size > 10 * 1024 * 1024) {
+      return Response.json({
+        success: false,
+        error: "File size must be less than 10MB"
+      }, {
+        status: 400
+      });
+    }
+    const timestamp = Date.now();
+    const fileName = `profile_${timestamp}.jpg`;
+    let imageBuffer;
+    try {
+      imageBuffer = await compressImage(imageFile, 400, 400, 0.8);
+    } catch (compressionError) {
+      console.error("Image compression failed:", compressionError);
+      imageBuffer = await imageFile.arrayBuffer();
+    }
+    if (!env.IMAGES) {
+      return Response.json({
+        success: false,
+        error: "Image storage not configured"
+      }, {
+        status: 500
+      });
+    }
+    await env.IMAGES.put(fileName, imageBuffer, {
+      httpMetadata: {
+        contentType: imageFile.type
+      }
+    });
+    const imageUrl = `/api/image/${fileName}`;
+    return Response.json({
+      success: true,
+      imageUrl
+    });
+  } catch (error) {
+    console.error("Error uploading image:", error);
+    return Response.json({
+      success: false,
+      error: "Failed to upload image"
+    }, {
+      status: 500
+    });
+  }
+}
+const route7 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
   action
 }, Symbol.toStringTag, { value: "Module" }));
-const serverManifest = { "entry": { "module": "/assets/entry.client-D0tFyxRz.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/index-DvEMbgo5.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/root-BNOUgMe-.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/index-DvEMbgo5.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/home": { "id": "routes/home", "parentId": "root", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/home-DUsAFJYC.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/BioLinkPage-DqpxeZS-.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/admin": { "id": "routes/admin", "parentId": "root", "path": "admin", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/admin-Coyj0xUF.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/dataService-Bzs1NMx2.js", "/assets/BioLinkPage-DqpxeZS-.js", "/assets/index-DvEMbgo5.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/about": { "id": "routes/about", "parentId": "root", "path": "about", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/about-D8Heu3gi.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/preview": { "id": "routes/preview", "parentId": "root", "path": "preview", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/preview-DtrggnDZ.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/BioLinkPage-DqpxeZS-.js", "/assets/dataService-Bzs1NMx2.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/api.data": { "id": "routes/api.data", "parentId": "root", "path": "api/data", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/api.data-l0sNRNKZ.js", "imports": [], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/api.save": { "id": "routes/api.save", "parentId": "root", "path": "api/save", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/api.save-l0sNRNKZ.js", "imports": [], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 } }, "url": "/assets/manifest-3de71488.js", "version": "3de71488", "sri": void 0 };
+async function loader({
+  params,
+  context
+}) {
+  var _a;
+  const env = context.cloudflare.env;
+  const filename = params.filename;
+  if (!filename) {
+    return new Response("File not found", {
+      status: 404
+    });
+  }
+  try {
+    if (!env.IMAGES) {
+      return new Response("Image storage not available", {
+        status: 500
+      });
+    }
+    const object = await env.IMAGES.get(filename);
+    if (!object) {
+      return new Response("Image not found", {
+        status: 404
+      });
+    }
+    const imageData = await object.arrayBuffer();
+    const contentType = ((_a = object.httpMetadata) == null ? void 0 : _a.contentType) || (filename.endsWith(".png") ? "image/png" : filename.endsWith(".gif") ? "image/gif" : "image/jpeg");
+    return new Response(imageData, {
+      headers: {
+        "Content-Type": contentType,
+        "Cache-Control": "public, max-age=86400",
+        // Cache for 24 hours
+        "ETag": object.etag || filename
+      }
+    });
+  } catch (error) {
+    console.error("Error serving image:", error);
+    return new Response("Error loading image", {
+      status: 500
+    });
+  }
+}
+const route8 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  loader
+}, Symbol.toStringTag, { value: "Module" }));
+const serverManifest = { "entry": { "module": "/assets/entry.client-D0tFyxRz.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/index-DvEMbgo5.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/root-BNOUgMe-.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/index-DvEMbgo5.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/home": { "id": "routes/home", "parentId": "root", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/home-DUsAFJYC.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/BioLinkPage-DqpxeZS-.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/admin": { "id": "routes/admin", "parentId": "root", "path": "admin", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/admin-BI0yHcSp.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/dataService-Bzs1NMx2.js", "/assets/BioLinkPage-DqpxeZS-.js", "/assets/index-DvEMbgo5.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/about": { "id": "routes/about", "parentId": "root", "path": "about", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/about-D8Heu3gi.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/preview": { "id": "routes/preview", "parentId": "root", "path": "preview", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/preview-DtrggnDZ.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/BioLinkPage-DqpxeZS-.js", "/assets/dataService-Bzs1NMx2.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/api.data": { "id": "routes/api.data", "parentId": "root", "path": "api/data", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/api.data-l0sNRNKZ.js", "imports": [], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/api.save": { "id": "routes/api.save", "parentId": "root", "path": "api/save", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/api.save-l0sNRNKZ.js", "imports": [], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/api.upload-image": { "id": "routes/api.upload-image", "parentId": "root", "path": "api/upload-image", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/api.upload-image-l0sNRNKZ.js", "imports": [], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/api.image.$filename": { "id": "routes/api.image.$filename", "parentId": "root", "path": "api/image/:filename", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/api.image._filename-l0sNRNKZ.js", "imports": [], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 } }, "url": "/assets/manifest-f48a765a.js", "version": "f48a765a", "sri": void 0 };
 const assetsBuildDirectory = "build/client";
 const basename = "/";
 const future = { "unstable_middleware": false, "unstable_optimizeDeps": false, "unstable_splitRouteModules": false, "unstable_subResourceIntegrity": false, "unstable_viteEnvironmentApi": false };
@@ -2046,6 +2206,22 @@ const routes = {
     index: void 0,
     caseSensitive: void 0,
     module: route6
+  },
+  "routes/api.upload-image": {
+    id: "routes/api.upload-image",
+    parentId: "root",
+    path: "api/upload-image",
+    index: void 0,
+    caseSensitive: void 0,
+    module: route7
+  },
+  "routes/api.image.$filename": {
+    id: "routes/api.image.$filename",
+    parentId: "root",
+    path: "api/image/:filename",
+    index: void 0,
+    caseSensitive: void 0,
+    module: route8
   }
 };
 export {
