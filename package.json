@@ -4,15 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite build && wrangler dev",
-    "dev:remote": "vite build && wrangler dev --remote",
-    "dev:local": "vite build && wrangler dev --local",
-    "build": "vite build",
-    "preview": "vite preview",
-    "deploy": "npm run build && npm run db:setup && wrangler deploy",
+    "dev": "react-router dev",
+    "build": "react-router build",
+    "deploy": "npm run build && npm run db:setup && wrangler deploy ./build/server/index.js --name ai-link-in-bio-editor --compatibility-date 2025-08-21",
+    "preview": "wrangler dev ./build/server/index.js",
     "db:setup": "npm run db:migrations:apply || echo 'Migration failed, but continuing with deployment'",
     "db:migrations:apply": "wrangler d1 migrations apply DB --remote",
-    "db:migrations:apply:local": "wrangler d1 migrations apply DB --local"
+    "db:migrations:apply:local": "wrangler d1 migrations apply DB --local",
+    "typecheck": "tsc"
   },
   "dependencies": {
     "@cloudflare/kv-asset-handler": "^0.4.0",
@@ -25,7 +24,9 @@
     "lucide-react": "^0.540.0",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "react-router-dom": "6.25.1"
+    "@react-router/dev": "^7.8.0",
+    "@react-router/cloudflare": "^7.8.0",
+    "react-router": "^7.8.0"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.11.7",

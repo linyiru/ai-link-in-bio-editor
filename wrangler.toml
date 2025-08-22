@@ -1,20 +1,22 @@
 name = "ai-link-in-bio-editor"
 compatibility_date = "2025-08-21"
-main = "src/worker.js"
+main = "worker-wrapper.js"
 
-# Assets configuration for React SPA  
-# Note: Deploy to Cloudflare may not support [assets] properly
-# Assets will be handled by the worker fallback mechanism
+# Configure for ES Module format
+[build]
+command = "npm run build"
+
+# Assets configuration for React Router v7
 [assets]
-directory = "./dist"
+directory = "./build/client"
 not_found_handling = "single-page-application"
 
 # D1 Database binding
 [[d1_databases]]
 binding = "DB"
 database_name = "link-in-bio-db"
-database_id = "placeholder-database-id"
-preview_database_id = "placeholder-preview-database-id"
+database_id = "e23c7652-ee14-49d0-84a7-34c34212ebc6"
+preview_database_id = "e23c7652-ee14-49d0-84a7-34c34212ebc6"
 migrations_dir = "migrations"
 
 # R2 Bucket binding for image storage

@@ -31,7 +31,17 @@
       "Bash(npx vite:*)",
       "Bash(git push:*)",
       "Bash(gh repo edit:*)",
-      "Bash(gh repo view:*)"
+      "Bash(gh repo view:*)",
+      "Bash(cp:*)",
+      "Bash(tail:*)",
+      "Bash(CLOUDFLARE_ACCOUNT_ID=***ACCOUNT_ID_REMOVED*** npx wrangler deploy ./build/server/index.js --name ai-link-in-bio-editor --compatibility-date 2025-08-21)",
+      "Bash(CLOUDFLARE_ACCOUNT_ID=***ACCOUNT_ID_REMOVED*** npx wrangler deploy)",
+      "Bash(CLOUDFLARE_ACCOUNT_ID=***ACCOUNT_ID_REMOVED*** npx wrangler d1 list)",
+      "Bash(CLOUDFLARE_ACCOUNT_ID=***ACCOUNT_ID_REMOVED*** npx wrangler d1 migrations apply DB --remote)",
+      "Bash(CLOUDFLARE_ACCOUNT_ID=***ACCOUNT_ID_REMOVED*** npx wrangler d1 execute DB --remote --command=\"SELECT name FROM sqlite_master WHERE type=''table'';\")",
+      "WebFetch(domain:ai-link-in-bio-editor.kaik.workers.dev)",
+      "Bash(CLOUDFLARE_ACCOUNT_ID=***ACCOUNT_ID_REMOVED*** npx wrangler tail --format=pretty)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": [],

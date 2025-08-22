@@ -1,0 +1,1 @@
+import{w as e,q as s,o}from"./chunk-UH6JLGW7-BSL8z29i.js";import{B as t}from"./BioLinkPage-Cq_WTP5r.js";const m=e(function(){const a=s();return o.jsx("div",{className:"relative",children:o.jsx(t,{userData:a})})});export{m as default};
