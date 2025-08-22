@@ -54,7 +54,7 @@ export async function handleApiRequest(request, env, ctx) {
 
       // Get user links
       const linksResult = await env.DB.prepare(`
-        SELECT link_id, title, url, is_active, icon
+        SELECT link_id, title, url, is_active
         FROM links 
         WHERE user_id = ? 
         ORDER BY order_index ASC
@@ -71,7 +71,7 @@ export async function handleApiRequest(request, env, ctx) {
           title: link.title,
           url: link.url,
           isActive: Boolean(link.is_active),
-          icon: link.icon || 'Link'
+          icon: 'Link' // Default icon until migration is run
         })),
         themeSettings: JSON.parse(userResult.theme_settings)
       };
@@ -275,16 +275,15 @@ export async function handleApiRequest(request, env, ctx) {
       for (let i = 0; i < userData.links.length; i++) {
         const link = userData.links[i];
         await env.DB.prepare(`
-          INSERT INTO links (user_id, link_id, title, url, is_active, order_index, icon)
-          VALUES (?, ?, ?, ?, ?, ?, ?)
+          INSERT INTO links (user_id, link_id, title, url, is_active, order_index)
+          VALUES (?, ?, ?, ?, ?, ?)
         `).bind(
           userId,
           link.id,
           link.title,
           link.url,
           link.isActive ? 1 : 0,
-          i,
-          link.icon || 'Link'
+          i
         ).run();
       }
 
