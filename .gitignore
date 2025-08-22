@@ -25,3 +25,12 @@ dist-ssr
 
 # Claude Code settings
 .claude/settings.local.json
+
+# Cloudflare Workers
+.wrangler
+.env.local
+wrangler.dev.vars
+.dev.vars
+
+# Build output
+build/

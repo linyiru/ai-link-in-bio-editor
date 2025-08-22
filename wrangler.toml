@@ -28,10 +28,10 @@ bucket_name = "link-in-bio-images"
 preview_bucket_name = "link-in-bio-images-preview"
 
 [vars]
-# Optional: For maximum performance, set up a custom domain for R2 images
-# 1. Configure custom domain in Cloudflare Dashboard → R2 → Your Bucket → Settings
-# 2. Set the custom domain URL below:
-# R2_PUBLIC_URL = "https://images.yourdomain.com"
+# R2 Public URL for direct image access (optional - improves performance)
+# Leave empty to use worker proxy, or set to your R2 public URL for direct access
+# To enable: run `wrangler r2 bucket dev-url enable YOUR_BUCKET_NAME`
+# R2_PUBLIC_URL = "https://pub-xxxxxxxxxx.r2.dev"
 
 # Environment variables for your Gemini API key
 # Use wrangler secret to set sensitive values:

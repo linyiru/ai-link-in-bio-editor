@@ -2073,10 +2073,17 @@ async function action({
     }
     await env.IMAGES.put(fileName, imageBuffer, {
       httpMetadata: {
-        contentType: imageFile.type
+        contentType: "image/jpeg"
+        // Always JPEG after compression
       }
     });
-    const imageUrl = `/api/image/${fileName}`;
+    let imageUrl;
+    if (env.R2_PUBLIC_URL) {
+      imageUrl = `${env.R2_PUBLIC_URL}/${fileName}`;
+    } else {
+      imageUrl = `/api/image/${fileName}`;
+      console.log("R2_PUBLIC_URL not configured, using worker proxy for images. For better performance, set R2_PUBLIC_URL environment variable to your R2 public domain.");
+    }
     return Response.json({
       success: true,
       imageUrl

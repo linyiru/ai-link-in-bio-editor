@@ -45,7 +45,10 @@
       "Bash(CLOUDFLARE_ACCOUNT_ID=***ACCOUNT_ID_REMOVED*** npx wrangler d1 execute DB --remote --command=\"SELECT sql FROM sqlite_master WHERE type=''table'' AND name=''links'';\")",
       "WebFetch(domain:reactjs.org)",
       "WebFetch(domain:legacy.reactjs.org)",
-      "WebFetch(domain:react.dev)"
+      "WebFetch(domain:react.dev)",
+      "Bash(CLOUDFLARE_ACCOUNT_ID=***ACCOUNT_ID_REMOVED*** npx wrangler r2 bucket list)",
+      "Bash(CLOUDFLARE_ACCOUNT_ID=***ACCOUNT_ID_REMOVED*** npx wrangler r2 bucket info link-in-bio-images)",
+      "Bash(CLOUDFLARE_ACCOUNT_ID=***ACCOUNT_ID_REMOVED*** npx wrangler r2 bucket public-url set link-in-bio-images --domain images.ai-link-in-bio-editor.workers.dev)"
     ],
     "deny": [],
     "ask": [],

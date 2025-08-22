@@ -20,8 +20,13 @@ Deploy your own instance to Cloudflare Workers with one click:
 
 > **Note**: The deployment will:
 > - Automatically provision a D1 database for storing user data  
+> - Set up R2 bucket for image storage
 > - Set up the Worker with proper routing and API endpoints
 > - Configure environment variables for the Gemini API (optional)
+
+### ⚡ Optional Setup - Better Image Performance
+
+For optimal image loading performance, follow the [deployment guide](./DEPLOY.md) to configure R2 direct access.
 
 ### What gets deployed?
 
