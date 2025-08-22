@@ -56,22 +56,35 @@ const HomePage: React.FC = () => {
   const [userData, setUserData] = useState<UserData>(demoUserData);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Try to load user's default page from localStorage
+  // Load user's data from database/localStorage
   useEffect(() => {
     const tryLoadUserData = async () => {
+      setIsLoading(true);
       try {
-        const stored = localStorage.getItem('link-in-bio-data');
-        if (stored) {
-          const parsedData = JSON.parse(stored);
-          setUserData(parsedData);
+        const data = await DataService.loadUserData();
+        if (data) {
+          setUserData(data);
         }
       } catch (error) {
         console.log('Using demo data for homepage');
+      } finally {
+        setIsLoading(false);
       }
     };
     
     tryLoadUserData();
   }, []);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading your page...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative">

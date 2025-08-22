@@ -21,8 +21,6 @@ const EditorPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [lastSaveResult, setLastSaveResult] = useState<{ 
     success: boolean; 
-    slug?: string; 
-    url?: string; 
     error?: string;
   } | null>(null);
   const [showSaveSuccess, setShowSaveSuccess] = useState(false);
@@ -51,9 +49,6 @@ const EditorPage: React.FC = () => {
     }
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-  };
 
   return (
     <div className="min-h-screen text-gray-300">
@@ -73,7 +68,7 @@ const EditorPage: React.FC = () => {
               disabled={isLoading}
               className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-semibold shadow-md"
             >
-              {isLoading ? 'Saving...' : 'Save & Share'}
+              {isLoading ? 'Saving...' : 'Save'}
             </button>
             <Link 
               to="/"
@@ -132,19 +127,9 @@ const EditorPage: React.FC = () => {
       {/* Success notification */}
       {showSaveSuccess && lastSaveResult?.success && (
         <div className="fixed top-20 right-4 bg-green-600 text-white p-4 rounded-lg shadow-lg z-30 max-w-sm">
-          <div className="mb-2 font-semibold">Page saved successfully!</div>
-          {lastSaveResult.url && (
-            <div className="space-y-2">
-              <div className="text-sm break-all bg-green-700 p-2 rounded">
-                {lastSaveResult.url}
-              </div>
-              <button
-                onClick={() => copyToClipboard(lastSaveResult.url!)}
-                className="text-xs bg-green-700 px-2 py-1 rounded hover:bg-green-800"
-              >
-                Copy Link
-              </button>
-            </div>
+          <div className="font-semibold">Page saved successfully!</div>
+          {lastSaveResult.error && (
+            <div className="text-sm mt-1 opacity-80">{lastSaveResult.error}</div>
           )}
         </div>
       )}
