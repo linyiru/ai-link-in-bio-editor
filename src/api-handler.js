@@ -329,61 +329,6 @@ export async function handleApiRequest(request, env, ctx) {
       }
     }
 
-    // POST /api/setup-database - Manual database setup endpoint
-    if (request.method === 'POST' && route === 'setup-database') {
-      try {
-        // Create tables manually if they don't exist
-        await env.DB.prepare(`
-          CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_slug TEXT UNIQUE NOT NULL,
-            name TEXT NOT NULL,
-            bio TEXT,
-            image_url TEXT,
-            theme_settings TEXT NOT NULL,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-          )
-        `).run();
-
-        await env.DB.prepare(`
-          CREATE TABLE IF NOT EXISTS links (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER NOT NULL,
-            link_id TEXT NOT NULL,
-            title TEXT NOT NULL,
-            url TEXT NOT NULL,
-            is_active INTEGER DEFAULT 1,
-            order_index INTEGER NOT NULL DEFAULT 0,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
-          )
-        `).run();
-
-        // Create indexes
-        await env.DB.prepare(`CREATE UNIQUE INDEX IF NOT EXISTS idx_users_slug ON users(user_slug)`).run();
-        await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_links_user_id ON links(user_id)`).run();
-        await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_links_order ON links(user_id, order_index)`).run();
-
-        return new Response(JSON.stringify({
-          success: true,
-          message: 'Database tables created successfully',
-          timestamp: new Date().toISOString()
-        }), {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        });
-      } catch (dbError) {
-        return new Response(JSON.stringify({
-          success: false,
-          error: dbError.message,
-          timestamp: new Date().toISOString()
-        }), {
-          status: 500,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        });
-      }
-    }
 
     // 404 for unknown routes
     return new Response(JSON.stringify({ error: 'Not found' }), {

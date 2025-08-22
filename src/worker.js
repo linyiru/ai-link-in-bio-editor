@@ -59,7 +59,7 @@ export default {
       <div class="space-y-4">
         <p class="text-gray-400">Current path: <code class="bg-gray-800 px-2 py-1 rounded">${url.pathname}</code></p>
         <a href="/api/health" class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
-          Check Database Status
+          Check System Status
         </a>
       </div>
     </div>
