@@ -34,7 +34,55 @@ export async function handleApiRequest(request, env, ctx) {
   const route = url.pathname.replace('/api/', '');
   
   try {
-    // GET /api/page/:slug - Get user data by slug
+    // GET /api/data - Get single user data (for single-user app)
+    if (request.method === 'GET' && route === 'data') {
+      // Get the first (and only) user's data
+      const userResult = await env.DB.prepare(`
+        SELECT id, name, bio, image_url, theme_settings 
+        FROM users 
+        ORDER BY id DESC 
+        LIMIT 1
+      `).first();
+
+      if (!userResult) {
+        // Return null when no user data exists (users start from zero)
+        return new Response('null', {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+
+      // Get user links
+      const linksResult = await env.DB.prepare(`
+        SELECT link_id, title, url, is_active, icon
+        FROM links 
+        WHERE user_id = ? 
+        ORDER BY order_index ASC
+      `).bind(userResult.id).all();
+
+      const userData = {
+        profile: {
+          name: userResult.name,
+          bio: userResult.bio || '',
+          imageUrl: userResult.image_url || ''
+        },
+        links: linksResult.results.map((link) => ({
+          id: link.link_id,
+          title: link.title,
+          url: link.url,
+          isActive: Boolean(link.is_active),
+          icon: link.icon || 'Link'
+        })),
+        themeSettings: JSON.parse(userResult.theme_settings)
+      };
+
+      return new Response(JSON.stringify(userData), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+
+    // GET /api/page/:slug - Get user data by slug (legacy support)
     if (request.method === 'GET' && route.startsWith('page/')) {
       const slug = route.split('/')[1];
       
@@ -178,61 +226,35 @@ export async function handleApiRequest(request, env, ctx) {
       }
     }
 
-    // POST /api/save - Save/update user data
+    // POST /api/save - Save/update user data (single-user mode)
     if (request.method === 'POST' && route === 'save') {
       const userData = await request.json();
       
-      let userSlug = userData.slug;
-      
-      // If no slug provided, generate a new one and create new user
-      if (!userSlug) {
-        userSlug = generateSlug();
-        
-        // Insert new user
+      // Check if user already exists
+      const userResult = await env.DB.prepare(`
+        SELECT id FROM users ORDER BY id DESC LIMIT 1
+      `).first();
+
+      let userId;
+
+      if (!userResult) {
+        // Create first user
         const insertResult = await env.DB.prepare(`
           INSERT INTO users (user_slug, name, bio, image_url, theme_settings, updated_at)
           VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
         `).bind(
-          userSlug,
+          'main', // Fixed slug for single user
           userData.profile.name,
           userData.profile.bio,
           userData.profile.imageUrl,
           JSON.stringify(userData.themeSettings)
         ).run();
 
-        const userId = insertResult.meta.last_row_id;
-
-        // Insert links
-        for (let i = 0; i < userData.links.length; i++) {
-          const link = userData.links[i];
-          await env.DB.prepare(`
-            INSERT INTO links (user_id, link_id, title, url, is_active, order_index)
-            VALUES (?, ?, ?, ?, ?, ?)
-          `).bind(
-            userId,
-            link.id,
-            link.title,
-            link.url,
-            link.isActive ? 1 : 0,
-            i
-          ).run();
-        }
+        userId = insertResult.meta.last_row_id;
       } else {
         // Update existing user
-        const userResult = await env.DB.prepare(`
-          SELECT id FROM users WHERE user_slug = ?
-        `).bind(userSlug).first();
+        userId = userResult.id;
 
-        if (!userResult) {
-          return new Response(JSON.stringify({ error: 'User not found' }), {
-            status: 404,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-          });
-        }
-
-        const userId = userResult.id;
-
-        // Update user
         await env.DB.prepare(`
           UPDATE users 
           SET name = ?, bio = ?, image_url = ?, theme_settings = ?, updated_at = CURRENT_TIMESTAMP
@@ -245,29 +267,29 @@ export async function handleApiRequest(request, env, ctx) {
           userId
         ).run();
 
-        // Delete existing links and insert new ones
+        // Delete existing links
         await env.DB.prepare(`DELETE FROM links WHERE user_id = ?`).bind(userId).run();
+      }
 
-        for (let i = 0; i < userData.links.length; i++) {
-          const link = userData.links[i];
-          await env.DB.prepare(`
-            INSERT INTO links (user_id, link_id, title, url, is_active, order_index)
-            VALUES (?, ?, ?, ?, ?, ?)
-          `).bind(
-            userId,
-            link.id,
-            link.title,
-            link.url,
-            link.isActive ? 1 : 0,
-            i
-          ).run();
-        }
+      // Insert links
+      for (let i = 0; i < userData.links.length; i++) {
+        const link = userData.links[i];
+        await env.DB.prepare(`
+          INSERT INTO links (user_id, link_id, title, url, is_active, order_index, icon)
+          VALUES (?, ?, ?, ?, ?, ?, ?)
+        `).bind(
+          userId,
+          link.id,
+          link.title,
+          link.url,
+          link.isActive ? 1 : 0,
+          i,
+          link.icon || 'Link'
+        ).run();
       }
 
       return new Response(JSON.stringify({ 
-        success: true, 
-        slug: userSlug,
-        url: `${url.origin}/#/page/${userSlug}`
+        success: true
       }), {
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
