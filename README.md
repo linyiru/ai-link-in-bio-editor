@@ -133,6 +133,13 @@ Images are served through optimized Worker API endpoints by default. For maximum
 - Each Deploy to Cloudflare user gets their own bucket instance
 - Worker API provides better security and consistent behavior
 
+## 📝 TODO
+
+- [ ] Add authentication system for admin access
+- [ ] Implement route protection for `/api` and `/admin` endpoints
+- [ ] Add user session management
+- [ ] Secure API endpoints with proper authorization
+
 ## ♿ Accessibility
 
 This app follows accessibility best practices with proper ARIA labels, semantic HTML, and keyboard navigation support.
