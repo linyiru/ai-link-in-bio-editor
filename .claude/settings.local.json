@@ -41,7 +41,8 @@
       "Bash(CLOUDFLARE_ACCOUNT_ID=***ACCOUNT_ID_REMOVED*** npx wrangler d1 execute DB --remote --command=\"SELECT name FROM sqlite_master WHERE type=''table'';\")",
       "WebFetch(domain:ai-link-in-bio-editor.kaik.workers.dev)",
       "Bash(CLOUDFLARE_ACCOUNT_ID=***ACCOUNT_ID_REMOVED*** npx wrangler tail --format=pretty)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(CLOUDFLARE_ACCOUNT_ID=***ACCOUNT_ID_REMOVED*** npx wrangler d1 execute DB --remote --command=\"SELECT sql FROM sqlite_master WHERE type=''table'' AND name=''links'';\")"
     ],
     "deny": [],
     "ask": [],

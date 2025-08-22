@@ -61,7 +61,7 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen text-gray-300">
+    <div className="min-h-screen bg-gray-900 text-gray-300">
       <header className="bg-gray-950/80 backdrop-blur-sm border-b border-gray-800 sticky top-0 z-20">
         <div className="container mx-auto px-6 py-3 flex justify-between items-center">
           <h1 className="text-xl font-bold text-white">AI Link-in-Bio</h1>

@@ -385,7 +385,7 @@ const demoUserData = {
     fontFamily: "sans"
   }
 };
-async function loader({
+async function loader$1({
   context
 }) {
   const env = context.cloudflare.env;
@@ -441,7 +441,7 @@ const home = UNSAFE_withComponentProps(function HomePage() {
 const route1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: home,
-  loader
+  loader: loader$1
 }, Symbol.toStringTag, { value: "Module" }));
 const API_BASE = "/api";
 class DataService {
@@ -1585,7 +1585,7 @@ const admin = UNSAFE_withComponentProps(function AdminPage() {
     });
   }
   return /* @__PURE__ */ jsxs("div", {
-    className: "min-h-screen text-gray-300",
+    className: "min-h-screen bg-gray-900 text-gray-300",
     children: [/* @__PURE__ */ jsx("header", {
       className: "bg-gray-950/80 backdrop-blur-sm border-b border-gray-800 sticky top-0 z-20",
       children: /* @__PURE__ */ jsxs("div", {
@@ -1845,7 +1845,109 @@ const route4 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   __proto__: null,
   default: preview
 }, Symbol.toStringTag, { value: "Module" }));
-const serverManifest = { "entry": { "module": "/assets/entry.client-Cn2w7i-E.js", "imports": ["/assets/chunk-UH6JLGW7-BSL8z29i.js", "/assets/index-CwLaVsKp.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/root-AJRuzLh4.js", "imports": ["/assets/chunk-UH6JLGW7-BSL8z29i.js", "/assets/index-CwLaVsKp.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/home": { "id": "routes/home", "parentId": "root", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/home-FVst4pOc.js", "imports": ["/assets/chunk-UH6JLGW7-BSL8z29i.js", "/assets/BioLinkPage-Cq_WTP5r.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/admin": { "id": "routes/admin", "parentId": "root", "path": "admin", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/admin-D-i_Cfm2.js", "imports": ["/assets/chunk-UH6JLGW7-BSL8z29i.js", "/assets/BioLinkPage-Cq_WTP5r.js", "/assets/dataService-Bzs1NMx2.js", "/assets/index-CwLaVsKp.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/about": { "id": "routes/about", "parentId": "root", "path": "about", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/about-BHK4adzE.js", "imports": ["/assets/chunk-UH6JLGW7-BSL8z29i.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/preview": { "id": "routes/preview", "parentId": "root", "path": "preview", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/preview-BVnK7er5.js", "imports": ["/assets/chunk-UH6JLGW7-BSL8z29i.js", "/assets/BioLinkPage-Cq_WTP5r.js", "/assets/dataService-Bzs1NMx2.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 } }, "url": "/assets/manifest-58aa1dc7.js", "version": "58aa1dc7", "sri": void 0 };
+async function loader({
+  context
+}) {
+  var _a;
+  const env = context.cloudflare.env;
+  try {
+    const userResult = await env.DB.prepare(`SELECT id, name, bio, image_url, theme_settings FROM users ORDER BY id DESC LIMIT 1`).first();
+    if (!userResult) {
+      return Response.json(null, {
+        status: 404
+      });
+    }
+    const linksResult = await env.DB.prepare(`SELECT id, title, url, icon, is_active FROM links WHERE user_id = ? ORDER BY order_index ASC`).bind(userResult.id).all();
+    const userData = {
+      id: userResult.id,
+      name: userResult.name,
+      bio: userResult.bio,
+      imageUrl: userResult.image_url,
+      themeSettings: userResult.theme_settings ? JSON.parse(userResult.theme_settings) : {
+        isDarkMode: true,
+        colorPaletteId: "default",
+        backgroundColorId: "default",
+        backgroundPattern: "none",
+        cardShadow: true,
+        borderRadius: "lg",
+        fontFamily: "sans"
+      },
+      links: ((_a = linksResult.results) == null ? void 0 : _a.map((link) => ({
+        id: link.id,
+        title: link.title,
+        url: link.url,
+        icon: link.icon || "Link",
+        isActive: link.is_active === 1
+      }))) || []
+    };
+    return Response.json(userData);
+  } catch (error) {
+    console.error("Error loading user data:", error);
+    return Response.json({
+      error: "Failed to load data"
+    }, {
+      status: 500
+    });
+  }
+}
+const route5 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  loader
+}, Symbol.toStringTag, { value: "Module" }));
+async function action({
+  request,
+  context
+}) {
+  const env = context.cloudflare.env;
+  try {
+    const userData = await request.json();
+    const existingUser = await env.DB.prepare(`SELECT id FROM users ORDER BY id DESC LIMIT 1`).first();
+    let userId = (existingUser == null ? void 0 : existingUser.id) || 1;
+    if (existingUser) {
+      await env.DB.prepare(`UPDATE users SET 
+         name = ?, 
+         bio = ?, 
+         image_url = ?, 
+         theme_settings = ? 
+         WHERE id = ?`).bind(userData.name, userData.bio, userData.imageUrl, JSON.stringify(userData.themeSettings), userId).run();
+    } else {
+      await env.DB.prepare(`INSERT INTO users (name, bio, image_url, theme_settings) 
+         VALUES (?, ?, ?, ?)`).bind(userData.name, userData.bio, userData.imageUrl, JSON.stringify(userData.themeSettings)).run();
+      userId = 1;
+    }
+    await env.DB.prepare(`DELETE FROM links WHERE user_id = ?`).bind(userId).run();
+    for (let i = 0; i < userData.links.length; i++) {
+      const link = userData.links[i];
+      await env.DB.prepare(`INSERT INTO links (user_id, link_id, title, url, icon, is_active, order_index) 
+         VALUES (?, ?, ?, ?, ?, ?, ?)`).bind(
+        userId,
+        `link_${Date.now()}_${i}`,
+        // Generate unique link_id
+        link.title,
+        link.url,
+        link.icon || "Link",
+        link.isActive ? 1 : 0,
+        i
+      ).run();
+    }
+    return Response.json({
+      success: true
+    });
+  } catch (error) {
+    console.error("Error saving user data:", error);
+    return Response.json({
+      success: false,
+      message: "Failed to save data"
+    }, {
+      status: 500
+    });
+  }
+}
+const route6 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  action
+}, Symbol.toStringTag, { value: "Module" }));
+const serverManifest = { "entry": { "module": "/assets/entry.client-D0tFyxRz.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/index-DvEMbgo5.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/root-BNOUgMe-.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/index-DvEMbgo5.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/home": { "id": "routes/home", "parentId": "root", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/home-CE7sm6St.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/BioLinkPage-CKfBq8JX.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/admin": { "id": "routes/admin", "parentId": "root", "path": "admin", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/admin-D4VDlZUb.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/BioLinkPage-CKfBq8JX.js", "/assets/dataService-Bzs1NMx2.js", "/assets/index-DvEMbgo5.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/about": { "id": "routes/about", "parentId": "root", "path": "about", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/about-D8Heu3gi.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/preview": { "id": "routes/preview", "parentId": "root", "path": "preview", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/preview-JmeVaFTX.js", "imports": ["/assets/chunk-UH6JLGW7-BWGKVKdm.js", "/assets/BioLinkPage-CKfBq8JX.js", "/assets/dataService-Bzs1NMx2.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/api.data": { "id": "routes/api.data", "parentId": "root", "path": "api/data", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/api.data-l0sNRNKZ.js", "imports": [], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/api.save": { "id": "routes/api.save", "parentId": "root", "path": "api/save", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/api.save-l0sNRNKZ.js", "imports": [], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 } }, "url": "/assets/manifest-3052614f.js", "version": "3052614f", "sri": void 0 };
 const assetsBuildDirectory = "build/client";
 const basename = "/";
 const future = { "unstable_middleware": false, "unstable_optimizeDeps": false, "unstable_splitRouteModules": false, "unstable_subResourceIntegrity": false, "unstable_viteEnvironmentApi": false };
@@ -1895,6 +1997,22 @@ const routes = {
     index: void 0,
     caseSensitive: void 0,
     module: route4
+  },
+  "routes/api.data": {
+    id: "routes/api.data",
+    parentId: "root",
+    path: "api/data",
+    index: void 0,
+    caseSensitive: void 0,
+    module: route5
+  },
+  "routes/api.save": {
+    id: "routes/api.save",
+    parentId: "root",
+    path: "api/save",
+    index: void 0,
+    caseSensitive: void 0,
+    module: route6
   }
 };
 export {
